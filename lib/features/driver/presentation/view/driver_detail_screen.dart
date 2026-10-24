@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:f1_app/common/localization/app_localizations.dart';
+import 'package:f1_app/common/localization/generated/app_localizations.dart';
 import 'package:f1_app/features/driver/domain/i_driver_repository.dart';
 import '../bloc/detail/driver_detail_cubit.dart';
 import '../bloc/detail/driver_detail_state.dart';
@@ -29,7 +29,19 @@ class DriverDetailScreen extends StatelessWidget {
             return switch (state) {
               DriverDetailNotFound() => Center(child: Text(l10n.notFoundTitle)),
               DriverDetailLoading() => const Center(child: CircularProgressIndicator()),
-              DriverDetailError(:final message) => Center(child: Text(message)),
+              DriverDetailError() => Center(child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(l10n.errorLoading),
+                  const SizedBox(height: 16),
+                  FilledButton.icon(
+                    icon: const Icon(Icons.refresh),
+                    label: Text(l10n.retry),
+                    onPressed: () => context.read<DriverDetailCubit>().load(driverId),
+                  ),
+                ],
+              ),
+              ),
               DriverDetailLoaded(:final driver) => LayoutBuilder(
                 builder: (context, constraints) {
                   return SingleChildScrollView(

@@ -6,5 +6,7 @@
   "teammate": "Teammate",
   "viewTeammate": "View teammate profile",
   "notFoundTitle": "No drivers found",
-  "notFoundSubtitle": "Try another query"
+  "notFoundSubtitle": "Try another query",
+  "errorLoading": "Failed to load data from network",
+  "retry": "Retry"
 }

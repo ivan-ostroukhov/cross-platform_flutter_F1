@@ -18,3 +18,7 @@ final class DriverListNotFound extends DriverListState {
   final String query;
   const DriverListNotFound(this.query);
 }
+
+final class DriverListError extends DriverListState {
+  const DriverListError();
+}

@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/i_driver_repository.dart';
 import 'driver_detail_state.dart';
+import '../../../../../common/network/load_exception.dart';
 
 class DriverDetailCubit extends Cubit<DriverDetailState> {
   final IDriverRepository _repository;
@@ -9,13 +10,21 @@ class DriverDetailCubit extends Cubit<DriverDetailState> {
 
   Future<void> load(String id) async {
     emit(const DriverDetailLoading());
-    final driver = await _repository.getDriverById(id);
-    if (isClosed) return;
+    try {
+      final driver = await _repository.getDriverById(id);
+      if (isClosed) return;
 
-    if (driver != null) {
-      emit(DriverDetailLoaded(driver));
-    } else {
+      if (driver != null) {
+        emit(DriverDetailLoaded(driver));
+      } else {
+        emit(const DriverDetailNotFound());
+      }
+    } on NotFoundLoadException {
+      if (isClosed) return;
       emit(const DriverDetailNotFound());
+    } on LoadException {
+      if (isClosed) return;
+      emit(const DriverDetailError());
     }
   }
 }

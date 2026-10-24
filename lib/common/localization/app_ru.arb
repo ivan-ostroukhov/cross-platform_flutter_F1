@@ -6,5 +6,7 @@
   "teammate": "Напарник",
   "viewTeammate": "Перейти к напарнику",
   "notFoundTitle": "Пилоты не найдены",
-  "notFoundSubtitle": "Попробуйте изменить запрос"
+  "notFoundSubtitle": "Попробуйте изменить запрос",
+  "errorLoading": "Ошибка загрузки данных из сети",
+  "retry": "Повторить"
 }
