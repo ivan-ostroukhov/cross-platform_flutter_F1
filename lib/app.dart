@@ -12,18 +12,32 @@ import 'features/driver/data/api/driver_api.dart';
 import 'features/driver/data/data_sources/network_driver_data_source.dart';
 import 'package:f1_app/common/localization/generated/app_localizations.dart';
 
+import 'features/constructor/data/constructor_repository.dart';
+import 'features/constructor/data/data_sources/constructor_remote_data_source.dart';
+import 'features/constructor/domain/constructor_repository.dart';
+
 class F1App extends StatelessWidget {
   const F1App({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider<IDriverRepository>(
-      create: (_) {
-        final dio = DioClient.create();
-        final api = DriverApi(dio);
-        final dataSource = NetworkDriverDataSource(api);
-        return DriverRepository(dataSource);
-      },
+    final dio = DioClient.create();
+
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider<IDriverRepository>(
+          create: (_) {
+            final api = DriverApi(dio);
+            final dataSource = NetworkDriverDataSource(api);
+            return DriverRepository(dataSource);
+          },
+        ),
+        RepositoryProvider<IConstructorRepository>(
+          create: (_) => ConstructorRepository(
+            ConstructorRemoteDataSource(dio),
+          ),
+        ),
+      ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
