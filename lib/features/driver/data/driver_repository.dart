@@ -1,27 +1,45 @@
 import '../domain/driver_model.dart';
 import '../domain/i_driver_repository.dart';
-import 'driver_mock_data.dart';
+import 'data_sources/driver_data_source.dart';
+import 'mappers/driver_mapper.dart';
 
 class DriverRepository implements IDriverRepository {
+  final IDriverDataSource _dataSource;
+
+  const DriverRepository(this._dataSource);
+
   @override
   Future<List<DriverModel>> getDrivers({String? query}) async {
-    await Future.delayed(const Duration(milliseconds: 150));
+    final dtos = await _dataSource.getDriverStandings();
+    final drivers = dtos.toDomainList();
+
     if (query == null || query.trim().isEmpty) {
-      return kF1Drivers;
+      return drivers;
     }
     final q = query.trim().toLowerCase();
-    return kF1Drivers
-        .where((d) => d.name.toLowerCase().contains(q) || d.teamName.toLowerCase().contains(q))
+    return drivers
+        .where((d) =>
+    d.name.toLowerCase().contains(q) ||
+        d.teamName.toLowerCase().contains(q))
         .toList();
   }
 
   @override
   Future<DriverModel?> getDriverById(String id) async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    try {
-      return kF1Drivers.firstWhere((d) => d.id == id);
-    } catch (_) {
-      return null;
-    }
+    final results = await Future.wait([
+      _dataSource.getDriverById(id),
+      _dataSource.getDriverStandings(),
+    ]);
+
+    final targetDto = results[0] as dynamic;
+    final allDtos = results[1] as List<dynamic>;
+
+    final domainList = allDtos.cast<dynamic>().isEmpty
+        ? <DriverModel>[]
+        : (results[1] as List).cast<dynamic>().toList();
+
+    final mappedAll = (results[1] as dynamic).toDomainList() as List<DriverModel>;
+    return mappedAll.where((d) => d.id == id).firstOrNull ??
+        (targetDto.toDomain(teammateId: id) as DriverModel);
   }
 }

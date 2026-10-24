@@ -8,6 +8,9 @@ import 'common/localization/locale_cubit.dart';
 import 'features/driver/data/driver_repository.dart';
 import 'features/driver/domain/i_driver_repository.dart';
 import 'features/driver/presentation/bloc/list/driver_list_cubit.dart';
+import 'common/network/dio_client.dart';
+import 'features/driver/data/api/driver_api.dart';
+import 'features/driver/data/data_sources/network_driver_data_source.dart';
 
 class F1App extends StatelessWidget {
   const F1App({super.key});
@@ -15,7 +18,12 @@ class F1App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepositoryProvider<IDriverRepository>(
-      create: (_) => DriverRepository(),
+      create: (_) {
+        final dio = DioClient.create();
+        final api = DriverApi(dio);
+        final dataSource = NetworkDriverDataSource(api);
+        return DriverRepository(dataSource);
+      },
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
