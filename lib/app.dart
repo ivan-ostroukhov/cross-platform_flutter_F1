@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'common/localization/app_localizations.dart';
 import 'common/navigation/app_router.dart';
 import 'common/theme/app_theme.dart';
 import 'common/theme/theme_cubit.dart';
@@ -11,6 +10,7 @@ import 'features/driver/presentation/bloc/list/driver_list_cubit.dart';
 import 'common/network/dio_client.dart';
 import 'features/driver/data/api/driver_api.dart';
 import 'features/driver/data/data_sources/network_driver_data_source.dart';
+import 'package:f1_app/common/localization/generated/app_localizations.dart';
 
 class F1App extends StatelessWidget {
   const F1App({super.key});

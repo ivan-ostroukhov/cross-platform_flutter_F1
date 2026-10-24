@@ -1,7 +1,9 @@
 import '../domain/driver_model.dart';
 import '../domain/i_driver_repository.dart';
+import 'dto/driver_dto.dart';
 import 'data_sources/driver_data_source.dart';
 import 'mappers/driver_mapper.dart';
+import '../../../../common/network/load_exception.dart';
 
 class DriverRepository implements IDriverRepository {
   final IDriverDataSource _dataSource;
@@ -26,20 +28,31 @@ class DriverRepository implements IDriverRepository {
 
   @override
   Future<DriverModel?> getDriverById(String id) async {
+// Параллельно запрашиваем список сезона и карточку конкретного пилота
     final results = await Future.wait([
-      _dataSource.getDriverById(id),
       _dataSource.getDriverStandings(),
+      _dataSource
+          .getDriverById(id)
+          .then<DriverStandingDto?>((val) => val)
+          .catchError((_) => null),
     ]);
 
-    final targetDto = results[0] as dynamic;
-    final allDtos = results[1] as List<dynamic>;
+    final standings = results[0] as List<DriverStandingDto>;
+    final specificDto = results[1] as DriverStandingDto?;
 
-    final domainList = allDtos.cast<dynamic>().isEmpty
-        ? <DriverModel>[]
-        : (results[1] as List).cast<dynamic>().toList();
+    final domainList = standings.toDomainList();
+    final fromList = domainList
+        .where((d) => d.id == id)
+        .firstOrNull;
 
-    final mappedAll = (results[1] as dynamic).toDomainList() as List<DriverModel>;
-    return mappedAll.where((d) => d.id == id).firstOrNull ??
-        (targetDto.toDomain(teammateId: id) as DriverModel);
+    if (fromList != null) {
+      return fromList;
+    }
+
+    if (specificDto != null) {
+      return specificDto.toDomain(teammateId: id);
+    }
+
+    throw const NotFoundLoadException();
   }
 }

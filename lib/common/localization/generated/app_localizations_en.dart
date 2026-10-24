@@ -28,4 +28,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notFoundSubtitle => 'Try another query';
+
+  @override
+  String get errorLoading => 'Failed to load data from network';
+
+  @override
+  String get retry => 'Retry';
 }

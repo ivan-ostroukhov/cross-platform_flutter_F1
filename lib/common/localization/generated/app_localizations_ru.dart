@@ -28,4 +28,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get notFoundSubtitle => 'Попробуйте изменить запрос';
+
+  @override
+  String get errorLoading => 'Ошибка загрузки данных из сети';
+
+  @override
+  String get retry => 'Повторить';
 }
