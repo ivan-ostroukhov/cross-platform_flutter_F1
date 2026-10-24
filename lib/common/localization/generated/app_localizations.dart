@@ -151,6 +151,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get retry;
+
+  /// No description provided for @driversTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Drivers'**
+  String get driversTab;
+
+  /// No description provided for @constructorsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Constructors'**
+  String get constructorsTab;
+
+  /// No description provided for @constructorsComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Constructors championship coming soon'**
+  String get constructorsComingSoon;
 }
 
 class _AppLocalizationsDelegate

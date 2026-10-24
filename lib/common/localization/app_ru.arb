@@ -8,5 +8,8 @@
   "notFoundTitle": "Пилоты не найдены",
   "notFoundSubtitle": "Попробуйте изменить запрос",
   "errorLoading": "Ошибка загрузки данных из сети",
-  "retry": "Повторить"
+  "retry": "Повторить",
+  "driversTab": "Пилоты",
+  "constructorsTab": "Команды",
+  "constructorsComingSoon": "Кубок конструкторов скоро появится"
 }

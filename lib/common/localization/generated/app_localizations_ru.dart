@@ -34,4 +34,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get retry => 'Повторить';
+
+  @override
+  String get driversTab => 'Пилоты';
+
+  @override
+  String get constructorsTab => 'Команды';
+
+  @override
+  String get constructorsComingSoon => 'Кубок конструкторов скоро появится';
 }

@@ -8,5 +8,8 @@
   "notFoundTitle": "No drivers found",
   "notFoundSubtitle": "Try another query",
   "errorLoading": "Failed to load data from network",
-  "retry": "Retry"
+  "retry": "Retry",
+  "driversTab": "Drivers",
+  "constructorsTab": "Constructors",
+  "constructorsComingSoon": "Constructors championship coming soon"
 }

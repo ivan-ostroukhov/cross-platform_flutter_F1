@@ -34,4 +34,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get retry => 'Retry';
+
+  @override
+  String get driversTab => 'Drivers';
+
+  @override
+  String get constructorsTab => 'Constructors';
+
+  @override
+  String get constructorsComingSoon => 'Constructors championship coming soon';
 }
