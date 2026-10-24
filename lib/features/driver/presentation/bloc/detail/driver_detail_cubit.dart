@@ -10,10 +10,12 @@ class DriverDetailCubit extends Cubit<DriverDetailState> {
   Future<void> load(String id) async {
     emit(const DriverDetailLoading());
     final driver = await _repository.getDriverById(id);
+    if (isClosed) return;
+
     if (driver != null) {
       emit(DriverDetailLoaded(driver));
     } else {
-      emit(const DriverDetailError('Driver not found'));
+      emit(const DriverDetailNotFound());
     }
   }
 }

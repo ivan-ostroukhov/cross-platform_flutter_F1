@@ -17,3 +17,7 @@ final class DriverDetailError extends DriverDetailState {
   final String message;
   const DriverDetailError(this.message);
 }
+
+final class DriverDetailNotFound extends DriverDetailState {
+  const DriverDetailNotFound();
+}

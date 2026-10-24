@@ -24,7 +24,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get viewTeammate => 'Перейти к напарнику';
 
   @override
-  String get notFoundTitle => 'Гонщики не найдены';
+  String get notFoundTitle => 'Пилоты не найдены';
 
   @override
   String get notFoundSubtitle => 'Попробуйте изменить запрос';

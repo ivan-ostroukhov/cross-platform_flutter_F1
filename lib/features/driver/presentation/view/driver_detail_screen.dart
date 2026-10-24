@@ -23,9 +23,11 @@ class DriverDetailScreen extends StatelessWidget {
           leading: BackButton(onPressed: () => context.pop()),
           title: Text(l10n.appTitle),
         ),
-        body: BlocBuilder<DriverDetailCubit, DriverDetailState>(
+        body: BlocBuilder<DriverDetailCubit, DriverDetailState>
+          (
           builder: (context, state) {
             return switch (state) {
+              DriverDetailNotFound() => Center(child: Text(l10n.notFoundTitle)),
               DriverDetailLoading() => const Center(child: CircularProgressIndicator()),
               DriverDetailError(:final message) => Center(child: Text(message)),
               DriverDetailLoaded(:final driver) => LayoutBuilder(
