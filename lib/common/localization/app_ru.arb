@@ -1,0 +1,10 @@
+{
+  "@@locale": "ru",
+  "appTitle": "Формула 1",
+  "searchPlaceholder": "Поиск пилота или команды...",
+  "points": "Очков",
+  "teammate": "Напарник",
+  "viewTeammate": "Перейти к напарнику",
+  "notFoundTitle": "Пилоты не найдены",
+  "notFoundSubtitle": "Попробуйте изменить запрос"
+}

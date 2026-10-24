@@ -1,0 +1,10 @@
+{
+  "@@locale": "en",
+  "appTitle": "Formula 1 Hub",
+  "searchPlaceholder": "Search driver or team...",
+  "points": "PTS",
+  "teammate": "Teammate",
+  "viewTeammate": "View teammate profile",
+  "notFoundTitle": "No drivers found",
+  "notFoundSubtitle": "Try another query"
+}
