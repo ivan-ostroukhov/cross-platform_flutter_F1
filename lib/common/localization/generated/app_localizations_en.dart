@@ -43,4 +43,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get constructorsComingSoon => 'Constructors championship coming soon';
+
+  @override
+  String get scheduleTab => 'Schedule';
+
+  @override
+  String get roundPrefix => 'Round';
+
+  @override
+  String get raceCompleted => 'Finished';
+
+  @override
+  String get raceUpcoming => 'Upcoming';
 }

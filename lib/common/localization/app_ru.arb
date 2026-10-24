@@ -11,5 +11,9 @@
   "retry": "Повторить",
   "driversTab": "Пилоты",
   "constructorsTab": "Команды",
-  "constructorsComingSoon": "Кубок конструкторов скоро появится"
+  "constructorsComingSoon": "Кубок конструкторов скоро появится",
+  "scheduleTab": "Календарь",
+  "roundPrefix": "Этап",
+  "raceCompleted": "Завершен",
+  "raceUpcoming": "Предстоит"
 }

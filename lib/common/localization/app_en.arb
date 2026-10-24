@@ -11,5 +11,9 @@
   "retry": "Retry",
   "driversTab": "Drivers",
   "constructorsTab": "Constructors",
-  "constructorsComingSoon": "Constructors championship coming soon"
+  "constructorsComingSoon": "Constructors championship coming soon",
+  "scheduleTab": "Schedule",
+  "roundPrefix": "Round",
+  "raceCompleted": "Finished",
+  "raceUpcoming": "Upcoming"
 }
