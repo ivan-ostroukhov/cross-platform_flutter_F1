@@ -169,6 +169,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Constructors championship coming soon'**
   String get constructorsComingSoon;
+
+  /// No description provided for @scheduleTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get scheduleTab;
+
+  /// No description provided for @roundPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Round'**
+  String get roundPrefix;
+
+  /// No description provided for @raceCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Finished'**
+  String get raceCompleted;
+
+  /// No description provided for @raceUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming'**
+  String get raceUpcoming;
 }
 
 class _AppLocalizationsDelegate

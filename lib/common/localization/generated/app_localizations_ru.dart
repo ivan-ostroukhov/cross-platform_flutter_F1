@@ -43,4 +43,16 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get constructorsComingSoon => 'Кубок конструкторов скоро появится';
+
+  @override
+  String get scheduleTab => 'Календарь';
+
+  @override
+  String get roundPrefix => 'Этап';
+
+  @override
+  String get raceCompleted => 'Завершен';
+
+  @override
+  String get raceUpcoming => 'Предстоит';
 }

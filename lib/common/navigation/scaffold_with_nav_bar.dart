@@ -37,6 +37,11 @@ class ScaffoldWithNavBar extends StatelessWidget {
             selectedIcon: const Icon(Icons.shield),
             label: l10n.constructorsTab,
           ),
+          NavigationDestination(
+            icon: const Icon(Icons.calendar_month_outlined),
+            selectedIcon: const Icon(Icons.calendar_month),
+            label: l10n.scheduleTab,
+          ),
         ],
       ),
     );

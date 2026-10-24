@@ -16,6 +16,9 @@ import 'features/constructor/data/constructor_repository.dart';
 import 'features/constructor/data/data_sources/constructor_remote_data_source.dart';
 import 'features/constructor/domain/constructor_repository.dart';
 
+import 'features/schedule/data/data_sources/schedule_remote_data_source.dart';
+import 'features/schedule/data/schedule_repository.dart';
+import 'features/schedule/domain/schedule_repository.dart';
 class F1App extends StatelessWidget {
   const F1App({super.key});
 
@@ -32,9 +35,16 @@ class F1App extends StatelessWidget {
             return DriverRepository(dataSource);
           },
         ),
+
         RepositoryProvider<IConstructorRepository>(
           create: (_) => ConstructorRepository(
             ConstructorRemoteDataSource(dio),
+          ),
+        ),
+
+        RepositoryProvider<IScheduleRepository>(
+          create: (_) => ScheduleRepository(
+            ScheduleRemoteDataSource(dio),
           ),
         ),
       ],
