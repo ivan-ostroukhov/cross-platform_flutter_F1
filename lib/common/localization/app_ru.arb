@@ -15,5 +15,25 @@
   "scheduleTab": "Календарь",
   "roundPrefix": "Этап",
   "raceCompleted": "Завершен",
-  "raceUpcoming": "Предстоит"
+  "raceUpcoming": "Предстоит",
+
+  "driverPositionShort": "поз",
+  "driverPointsShort": "блв",
+  "winsLabel": "Победы",
+  "podiumsLabel": "Подиумы",
+  "polesLabel": "Поулы",
+  "dnfsLabel": "DNFs",
+  "seasonPrefix": "{year} Сезон",
+  "@seasonPrefix": {
+    "placeholders": {
+      "year": { "type": "String" }
+    }
+  },
+  "driverCodeLabel": "Код гонщика",
+  "teamLabel": "Команда",
+  "firstRaceLabel": "Первая гонка",
+  "firstWinLabel": "Первая победа",
+  "worldChampionshipsLabel": "Мировой чемпионат",
+  "dateOfBirthLabel": "Дата рождения",
+  "countryLabel": "Страна"
 }

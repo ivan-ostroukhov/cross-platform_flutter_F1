@@ -15,5 +15,25 @@
   "scheduleTab": "Schedule",
   "roundPrefix": "Round",
   "raceCompleted": "Finished",
-  "raceUpcoming": "Upcoming"
+  "raceUpcoming": "Upcoming",
+
+  "driverPositionShort": "pos",
+  "driverPointsShort": "pts",
+  "winsLabel": "Wins",
+  "podiumsLabel": "Podiums",
+  "polesLabel": "Poles",
+  "dnfsLabel": "DNFs",
+  "seasonPrefix": "{year} Season",
+  "@seasonPrefix": {
+    "placeholders": {
+      "year": { "type": "String" }
+    }
+  },
+  "driverCodeLabel": "Driver Code",
+  "teamLabel": "Team",
+  "firstRaceLabel": "First Entry",
+  "firstWinLabel": "First Win",
+  "worldChampionshipsLabel": "World Championships",
+  "dateOfBirthLabel": "Date of Birth",
+  "countryLabel": "Country"
 }

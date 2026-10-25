@@ -193,6 +193,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Upcoming'**
   String get raceUpcoming;
+
+  /// No description provided for @driverPositionShort.
+  ///
+  /// In en, this message translates to:
+  /// **'pos'**
+  String get driverPositionShort;
+
+  /// No description provided for @driverPointsShort.
+  ///
+  /// In en, this message translates to:
+  /// **'pts'**
+  String get driverPointsShort;
+
+  /// No description provided for @winsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Wins'**
+  String get winsLabel;
+
+  /// No description provided for @podiumsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Podiums'**
+  String get podiumsLabel;
+
+  /// No description provided for @polesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Poles'**
+  String get polesLabel;
+
+  /// No description provided for @dnfsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'DNFs'**
+  String get dnfsLabel;
+
+  /// No description provided for @seasonPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'{year} Season'**
+  String seasonPrefix(String year);
+
+  /// No description provided for @driverCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver Code'**
+  String get driverCodeLabel;
+
+  /// No description provided for @teamLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Team'**
+  String get teamLabel;
+
+  /// No description provided for @firstRaceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'First Entry'**
+  String get firstRaceLabel;
+
+  /// No description provided for @firstWinLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'First Win'**
+  String get firstWinLabel;
+
+  /// No description provided for @worldChampionshipsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'World Championships'**
+  String get worldChampionshipsLabel;
+
+  /// No description provided for @dateOfBirthLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of Birth'**
+  String get dateOfBirthLabel;
+
+  /// No description provided for @countryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get countryLabel;
 }
 
 class _AppLocalizationsDelegate

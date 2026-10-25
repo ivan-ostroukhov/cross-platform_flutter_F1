@@ -106,11 +106,10 @@ class _DriversContent extends StatelessWidget {
       slivers: [
         SliverToBoxAdapter(
           child: SizedBox(
-            height: 290, // Увеличиваем высоту, чтобы пилот и градиент раскрылись свободно
+            height: 290,
             child: Stack(
               clipBehavior: Clip.none,
               children: [
-                // 1. Широкое яркое бирюзовое свечение на всю верхнюю область
                 Positioned.fill(
                   child: Container(
                     decoration: BoxDecoration(
@@ -129,7 +128,6 @@ class _DriversContent extends StatelessWidget {
                   ),
                 ),
 
-                // 2. Дополнительное объемное радиальное пятно прямо за шлемом
                 Positioned(
                   top: -40,
                   right: -20,
@@ -151,11 +149,10 @@ class _DriversContent extends StatelessWidget {
                   ),
                 ),
 
-                // 3. Картинка пилота с мягким затуханием снизу
                 Positioned(
                   right: 12,
                   top: 0,
-                  bottom: 30, // Спускается ниже текста
+                  bottom: 30,
                   width: 190,
                   child: ShaderMask(
                     shaderCallback: (rect) {
@@ -173,14 +170,13 @@ class _DriversContent extends StatelessWidget {
                     },
                     blendMode: BlendMode.dstIn,
                     child: Image.asset(
-                      'assets/images/antonelii.png',
+                      'assets/images/antonnelii.png',
                       fit: BoxFit.contain,
                       alignment: Alignment.bottomRight,
                     ),
                   ),
                 ),
 
-                // 4. Мягкий плавный переход всей нижней границы блока в чистый черный цвет
                 Positioned(
                   left: 0,
                   right: 0,
@@ -203,7 +199,6 @@ class _DriversContent extends StatelessWidget {
                   ),
                 ),
 
-                // 5. Строка 1-го места (лидера)
                 Positioned(
                   left: 0,
                   right: 0,
@@ -290,7 +285,6 @@ class _DriversContent extends StatelessWidget {
           ),
         ),
 
-        // Список остальных пилотов
         SliverList(
           delegate: SliverChildBuilderDelegate(
                 (context, index) {
