@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:f1_app/common/localization/generated/app_localizations.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
-import '../../../../common/theme/theme_cubit.dart';
+import 'package:f1_app/common/localization/generated/app_localizations.dart';
 import '../../../../common/localization/locale_cubit.dart';
+import '../../../../common/theme/theme_cubit.dart';
+import '../../../../common/utils/f1_colors.dart';
+import '../../../../common/utils/f1_media.dart';
 import '../bloc/list/driver_list_cubit.dart';
 import '../bloc/list/driver_list_state.dart';
 
@@ -14,100 +17,385 @@ class DriverListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text(l10n.appTitle),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Row(
+          children: [
+            Text(
+              l10n.appTitle,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(width: 4),
+            const Icon(Icons.unfold_more, color: Colors.white70, size: 20),
+          ],
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.language),
+            icon: const Icon(Icons.language, color: Colors.white70),
             onPressed: () => context.read<LocaleCubit>().toggleLocale(),
           ),
           IconButton(
-            icon: const Icon(Icons.brightness_6),
+            icon: const Icon(Icons.brightness_6, color: Colors.white70),
             onPressed: () => context.read<ThemeCubit>().toggleTheme(),
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: l10n.searchPlaceholder,
-                prefixIcon: const Icon(Icons.search),
-                border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
-              ),
-              onChanged: (val) => context.read<DriverListCubit>().search(val),
+      body: BlocBuilder<DriverListCubit, DriverListState>(
+        builder: (context, state) {
+          return switch (state) {
+            DriverListLoading() => const Center(
+              child: CircularProgressIndicator(color: Colors.white),
             ),
-          ),
-          Expanded(
-            child: BlocBuilder<DriverListCubit, DriverListState>(
-              builder: (context, state) {
-                return switch (state) {
-                  DriverListLoading() => const Center(child: CircularProgressIndicator()),
-                // ВОТ ЭТА ВЕТКА ДОБАВИЛАСЬ:
-                  DriverListError() => Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.cloud_off, size: 64, color: colorScheme.error),
-                        const SizedBox(height: 12),
-                        Text(l10n.errorLoading, style: Theme.of(context).textTheme.titleMedium),
-                        const SizedBox(height: 16),
-                        FilledButton.icon(
-                          icon: const Icon(Icons.refresh),
-                          label: Text(l10n.retry),
-                          onPressed: () => context.read<DriverListCubit>().loadDrivers(),
-                        ),
-                      ],
+            DriverListError() => Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.cloud_off, size: 64, color: Colors.redAccent),
+                  const SizedBox(height: 12),
+                  Text(
+                    l10n.errorLoading,
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                  const SizedBox(height: 16),
+                  FilledButton.icon(
+                    icon: const Icon(Icons.refresh),
+                    label: Text(l10n.retry),
+                    onPressed: () =>
+                        context.read<DriverListCubit>().loadDrivers(),
+                  ),
+                ],
+              ),
+            ),
+            DriverListNotFound(:final query) => Center(
+              child: Text(
+                '"$query": ${l10n.notFoundSubtitle}',
+                style: const TextStyle(color: Colors.white70),
+              ),
+            ),
+            DriverListLoaded(:final drivers) => _DriversContent(drivers: drivers),
+          };
+        },
+      ),
+    );
+  }
+}
+
+class _DriversContent extends StatelessWidget {
+  final List<dynamic> drivers;
+
+  const _DriversContent({required this.drivers});
+
+  @override
+  Widget build(BuildContext context) {
+    if (drivers.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final leader = drivers.first;
+    final leaderTeamColor = F1Colors.getTeamColor(leader.teamName);
+
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: SizedBox(
+            height: 290, // Увеличиваем высоту, чтобы пилот и градиент раскрылись свободно
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                // 1. Широкое яркое бирюзовое свечение на всю верхнюю область
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: const [0.0, 0.5, 0.8, 1.0],
+                        colors: [
+                          leaderTeamColor.withValues(alpha: 0.50),
+                          leaderTeamColor.withValues(alpha: 0.28),
+                          leaderTeamColor.withValues(alpha: 0.08),
+                          Colors.black,
+                        ],
+                      ),
                     ),
                   ),
-                  DriverListNotFound(:final query) => Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.search_off, size: 64, color: colorScheme.error),
-                        const SizedBox(height: 12),
-                        Text(
-                          l10n.notFoundTitle,
-                          style: Theme.of(context).textTheme.headlineSmall,
-                        ),
-                        const SizedBox(height: 8),
-                        Text('"$query": ${l10n.notFoundSubtitle}'),
-                      ],
+                ),
+
+                // 2. Дополнительное объемное радиальное пятно прямо за шлемом
+                Positioned(
+                  top: -40,
+                  right: -20,
+                  width: 320,
+                  height: 300,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                        center: const Alignment(0.4, -0.2),
+                        radius: 0.9,
+                        colors: [
+                          leaderTeamColor.withValues(alpha: 0.65),
+                          leaderTeamColor.withValues(alpha: 0.25),
+                          Colors.transparent,
+                        ],
+                        stops: const [0.0, 0.5, 1.0],
+                      ),
                     ),
                   ),
-                  DriverListLoaded(:final drivers) => ListView.builder(
-                    itemCount: drivers.length,
-                    itemBuilder: (context, index) {
-                      final driver = drivers[index];
-                      return Card(
-                        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: colorScheme.primary,
+                ),
+
+                // 3. Картинка пилота с мягким затуханием снизу
+                Positioned(
+                  right: 12,
+                  top: 0,
+                  bottom: 30, // Спускается ниже текста
+                  width: 190,
+                  child: ShaderMask(
+                    shaderCallback: (rect) {
+                      return const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: [0.0, 0.65, 0.92, 1.0],
+                        colors: [
+                          Colors.white,
+                          Colors.white,
+                          Colors.white38,
+                          Colors.transparent,
+                        ],
+                      ).createShader(rect);
+                    },
+                    blendMode: BlendMode.dstIn,
+                    child: Image.asset(
+                      'assets/images/antonelii.png',
+                      fit: BoxFit.contain,
+                      alignment: Alignment.bottomRight,
+                    ),
+                  ),
+                ),
+
+                // 4. Мягкий плавный переход всей нижней границы блока в чистый черный цвет
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  height: 90,
+                  child: IgnorePointer(
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          stops: [0.0, 1.0],
+                          colors: [
+                            Colors.transparent,
+                            Colors.black,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                // 5. Строка 1-го места (лидера)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 12,
+                  child: InkWell(
+                    onTap: () => context.push('/drivers/${leader.id}'),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: [
+                          const SizedBox(
+                            width: 32,
                             child: Text(
-                              '#${driver.permanentNumber}',
-                              style: TextStyle(color: colorScheme.onPrimary),
+                              '01',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
-                          title: Text(driver.name),
-                          subtitle: Text(driver.teamName),
-                          trailing: Text('${driver.points} ${l10n.points}'),
-                          onTap: () => context.push('/drivers/${driver.id}'),
-                        ),
-                      );
-                    },
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  leader.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  leader.teamName,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color: leaderTeamColor,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                '${leader.points}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                'очк',
+                                style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.5),
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(width: 8),
+                          Icon(
+                            Icons.chevron_right,
+                            color: Colors.white.withValues(alpha: 0.4),
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                };
-              },
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+
+        // Список остальных пилотов
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+                (context, index) {
+              final driver = drivers[index + 1];
+              final positionNumber = (index + 2).toString().padLeft(2, '0');
+              final teamColor = F1Colors.getTeamColor(driver.teamName);
+
+              return Column(
+                children: [
+                  Divider(
+                    color: Colors.white.withValues(alpha: 0.07),
+                    height: 1,
+                    indent: 16,
+                    endIndent: 16,
+                  ),
+                  InkWell(
+                    onTap: () => context.push('/drivers/${driver.id}'),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 32,
+                            child: Text(
+                              positionNumber,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  driver.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  driver.teamName,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color: teamColor,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                '${driver.points}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                'очк',
+                                style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.5),
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(width: 8),
+                          Icon(
+                            Icons.chevron_right,
+                            color: Colors.white.withValues(alpha: 0.4),
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+            childCount: drivers.length - 1,
+          ),
+        ),
+
+        const SliverToBoxAdapter(
+          child: SizedBox(height: 40),
+        ),
+      ],
     );
   }
 }
