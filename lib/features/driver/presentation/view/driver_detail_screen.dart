@@ -9,6 +9,7 @@ import '../../../../common/utils/f1_media.dart';
 import '../bloc/list/driver_list_cubit.dart';
 import '../bloc/list/driver_list_state.dart';
 import '../widgets/round_points_chart.dart';
+import '../widgets/driver_hero_image.dart';
 
 class DriverDetailScreen extends StatelessWidget {
   final String driverId;
@@ -71,6 +72,7 @@ class DriverDetailScreen extends StatelessWidget {
               clipBehavior: Clip.none,
               children: [
                 Positioned.fill(
+                  top: -400,
                   child: Container(
                     decoration: BoxDecoration(
                       gradient: RadialGradient(
@@ -93,39 +95,9 @@ class DriverDetailScreen extends StatelessWidget {
                   top: 40,
                   bottom: 0,
                   width: 400,
-                  child: ShaderMask(
-                    shaderCallback: (rect) {
-                      return const LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        stops: [0.0, 0.65, 0.90, 1.0],
-                        colors: [
-                          Colors.white,
-                          Colors.white,
-                          Colors.white24,
-                          Colors.transparent,
-                        ],
-                      ).createShader(rect);
-                    },
-                    blendMode: BlendMode.dstIn,
-                    child: isAntonelli
-                        ? Image.asset(
-                      'assets/images/antonnelii.png',
-                      fit: BoxFit.contain,
-                      alignment: Alignment.topRight,
-                    )
-                        : CachedNetworkImage(
-                      imageUrl: imageUrl,
-                      httpHeaders: F1Media.defaultHeaders,
-                      fit: BoxFit.contain,
-                      alignment: Alignment.topRight,
-                      placeholder: (_, __) => const SizedBox.shrink(),
-                      errorWidget: (_, __, ___) => Icon(
-                        Icons.sports_motorsports_rounded,
-                        size: 200,
-                        color: Colors.white.withValues(alpha: 0.4),
-                      ),
-                    ),
+                  child: DriverHeroImage(
+                    driverId: driverId,
+                    alignment: Alignment.topRight,
                   ),
                 ),
 

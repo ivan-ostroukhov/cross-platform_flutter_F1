@@ -8,6 +8,7 @@ import '../../../../common/theme/theme_cubit.dart';
 import '../../../../common/utils/f1_colors.dart';
 import '../bloc/list/driver_list_cubit.dart';
 import '../bloc/list/driver_list_state.dart';
+import '../widgets/driver_hero_image.dart';
 
 class DriverListScreen extends StatelessWidget {
   const DriverListScreen({super.key});
@@ -83,14 +84,15 @@ class _DriversContent extends StatelessWidget {
               clipBehavior: Clip.none,
               children: [
                 Positioned.fill(
+                  top: -400,
                   child: Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        stops: const [0.0, 0.5, 0.8, 1.0],
+                        stops: const [0.0, 0.5, 0.91, 1],
                         colors: [
-                          leaderTeamColor.withValues(alpha: 0.50),
+                          leaderTeamColor.withValues(alpha: 0.5),
                           leaderTeamColor.withValues(alpha: 0.28),
                           leaderTeamColor.withValues(alpha: 0.08),
                           Colors.black,
@@ -100,52 +102,17 @@ class _DriversContent extends StatelessWidget {
                   ),
                 ),
 
-                Positioned(
-                  top: -40,
-                  right: -20,
-                  width: 420,
-                  height: 300,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: RadialGradient(
-                        center: const Alignment(0.4, -0.2),
-                        radius: 0.7,
-                        colors: [
-                          leaderTeamColor.withValues(alpha: 0.65),
-                          leaderTeamColor.withValues(alpha: 0.15),
-                          Colors.transparent,
-                        ],
-                        stops: const [0.0, 0.5, 1.0],
-                      ),
-                    ),
-                  ),
-                ),
+
+
 
                 Positioned(
                   right: 12,
                   top: 30,
                   bottom: 30,
                   width: 200,
-                  child: ShaderMask(
-                    shaderCallback: (rect) {
-                      return const LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        stops: [0.0, 0.65, 0.92, 1.0],
-                        colors: [
-                          Colors.white,
-                          Colors.white,
-                          Colors.white38,
-                          Colors.transparent,
-                        ],
-                      ).createShader(rect);
-                    },
-                    blendMode: BlendMode.dstIn,
-                    child: Image.asset(
-                      'assets/images/antonnelii.png',
-                      fit: BoxFit.contain,
-                      alignment: Alignment.bottomRight,
-                    ),
+                  child: DriverHeroImage(
+                    driverId: leader.id,
+                    alignment: Alignment.topRight,
                   ),
                 ),
 
