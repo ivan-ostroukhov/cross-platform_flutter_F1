@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:f1_app/common/localization/generated/app_localizations.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
+import 'package:f1_app/common/localization/generated/app_localizations.dart';
 import '../../../../common/utils/f1_colors.dart';
+import '../../../../common/utils/f1_media.dart';
+import '../bloc/list/driver_list_cubit.dart';
+import '../bloc/list/driver_list_state.dart';
 import '../widgets/round_points_chart.dart';
 
 class DriverDetailScreen extends StatelessWidget {
@@ -16,7 +21,40 @@ class DriverDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final teamColor = F1Colors.getTeamColor('Mercedes');
+
+
+    final listState = context.read<DriverListCubit>().state;
+    dynamic currentDriver;
+
+    if (listState is DriverListLoaded) {
+      try {
+        currentDriver = listState.drivers.firstWhere(
+              (d) => d.id == driverId,
+        );
+      } catch (_) {
+        currentDriver = listState.drivers.first;
+      }
+    }
+
+    final fullName = currentDriver?.name as String? ?? 'Driver Name';
+    final nameParts = fullName.split(' ');
+    final firstName = nameParts.isNotEmpty ? nameParts.first : '';
+    final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+
+    final teamName = currentDriver?.teamName as String? ?? 'Mercedes';
+    final teamColor = F1Colors.getTeamColor(teamName);
+    final points = currentDriver?.points?.toString() ?? '0';
+
+    String positionNumber = '01';
+    if (listState is DriverListLoaded && currentDriver != null) {
+      final index = listState.drivers.indexOf(currentDriver);
+      if (index >= 0) {
+        positionNumber = (index + 1).toString().padLeft(2, '0');
+      }
+    }
+
+    final imageUrl = F1Media.getDriverImageUrl(driverId);
+    final isAntonelli = driverId.toLowerCase().contains('antonelli');
 
     final roundPoints = [
       25, 25, 25, 25, 25, 1, 1, 18, 1, 25, 25, 18, 25, 25, 15, 25, 18,
@@ -70,10 +108,23 @@ class DriverDetailScreen extends StatelessWidget {
                       ).createShader(rect);
                     },
                     blendMode: BlendMode.dstIn,
-                    child: Image.asset(
+                    child: isAntonelli
+                        ? Image.asset(
                       'assets/images/antonnelii.png',
                       fit: BoxFit.contain,
                       alignment: Alignment.topRight,
+                    )
+                        : CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      httpHeaders: F1Media.defaultHeaders,
+                      fit: BoxFit.contain,
+                      alignment: Alignment.topRight,
+                      placeholder: (_, __) => const SizedBox.shrink(),
+                      errorWidget: (_, __, ___) => Icon(
+                        Icons.sports_motorsports_rounded,
+                        size: 200,
+                        color: Colors.white.withValues(alpha: 0.4),
+                      ),
                     ),
                   ),
                 ),
@@ -95,7 +146,7 @@ class DriverDetailScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                
+
                 SafeArea(
                   bottom: false,
                   child: Padding(
@@ -115,9 +166,9 @@ class DriverDetailScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
 
-                        const Text(
-                          'Kimi',
-                          style: TextStyle(
+                        Text(
+                          firstName,
+                          style: const TextStyle(
                             fontSize: 34,
                             fontWeight: FontWeight.w900,
                             color: Colors.white,
@@ -125,7 +176,7 @@ class DriverDetailScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'Antonelli',
+                          lastName,
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.w700,
@@ -155,9 +206,9 @@ class DriverDetailScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 18),
 
-                        _buildBigStat('01', l10n.driverPositionShort),
+                        _buildBigStat(positionNumber, l10n.driverPositionShort),
                         const SizedBox(height: 10),
-                        _buildBigStat('340', l10n.driverPointsShort),
+                        _buildBigStat(points, l10n.driverPointsShort),
                         const SizedBox(height: 16),
 
                         _buildIconStat(
@@ -207,14 +258,14 @@ class DriverDetailScreen extends StatelessWidget {
             // ------------------ КАРЬЕРНЫЕ ДАННЫЕ ------------------
             _buildDetailTile(
               leading: Text(
-                '12',
+                driverId.length > 2 ? driverId.substring(0, 2).toUpperCase() : '00',
                 style: TextStyle(
                   color: teamColor,
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              title: 'ANT',
+              title: driverId.length >= 3 ? driverId.substring(0, 3).toUpperCase() : driverId.toUpperCase(),
               subtitle: l10n.driverCodeLabel,
             ),
 
@@ -224,7 +275,7 @@ class DriverDetailScreen extends StatelessWidget {
                 color: Colors.white.withValues(alpha: 0.9),
                 size: 26,
               ),
-              title: 'Mercedes-AMG Petronas F1 Team',
+              title: teamName,
               subtitle: l10n.teamLabel,
             ),
 

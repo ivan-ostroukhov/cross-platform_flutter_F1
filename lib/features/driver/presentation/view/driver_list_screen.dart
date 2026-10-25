@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:f1_app/common/localization/generated/app_localizations.dart';
 import '../../../../common/localization/locale_cubit.dart';
 import '../../../../common/theme/theme_cubit.dart';
 import '../../../../common/utils/f1_colors.dart';
-import '../../../../common/utils/f1_media.dart';
 import '../bloc/list/driver_list_cubit.dart';
 import '../bloc/list/driver_list_state.dart';
 
@@ -20,34 +18,6 @@ class DriverListScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Row(
-          children: [
-            Text(
-              l10n.appTitle,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 22,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(width: 4),
-            const Icon(Icons.unfold_more, color: Colors.white70, size: 20),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.language, color: Colors.white70),
-            onPressed: () => context.read<LocaleCubit>().toggleLocale(),
-          ),
-          IconButton(
-            icon: const Icon(Icons.brightness_6, color: Colors.white70),
-            onPressed: () => context.read<ThemeCubit>().toggleTheme(),
-          ),
-        ],
-      ),
       body: BlocBuilder<DriverListCubit, DriverListState>(
         builder: (context, state) {
           return switch (state) {
@@ -99,14 +69,16 @@ class _DriversContent extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
+    final l10n = AppLocalizations.of(context)!;
     final leader = drivers.first;
     final leaderTeamColor = F1Colors.getTeamColor(leader.teamName);
 
     return CustomScrollView(
+      physics: const BouncingScrollPhysics(),
       slivers: [
         SliverToBoxAdapter(
           child: SizedBox(
-            height: 290,
+            height: 340,
             child: Stack(
               clipBehavior: Clip.none,
               children: [
@@ -131,16 +103,16 @@ class _DriversContent extends StatelessWidget {
                 Positioned(
                   top: -40,
                   right: -20,
-                  width: 320,
+                  width: 420,
                   height: 300,
                   child: Container(
                     decoration: BoxDecoration(
                       gradient: RadialGradient(
                         center: const Alignment(0.4, -0.2),
-                        radius: 0.9,
+                        radius: 0.7,
                         colors: [
                           leaderTeamColor.withValues(alpha: 0.65),
-                          leaderTeamColor.withValues(alpha: 0.25),
+                          leaderTeamColor.withValues(alpha: 0.15),
                           Colors.transparent,
                         ],
                         stops: const [0.0, 0.5, 1.0],
@@ -151,9 +123,9 @@ class _DriversContent extends StatelessWidget {
 
                 Positioned(
                   right: 12,
-                  top: 0,
+                  top: 30,
                   bottom: 30,
-                  width: 190,
+                  width: 200,
                   child: ShaderMask(
                     shaderCallback: (rect) {
                       return const LinearGradient(
@@ -199,6 +171,47 @@ class _DriversContent extends StatelessWidget {
                   ),
                 ),
 
+                // Строка заголовка и действий в самом верху градиента
+                SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              l10n.appTitle,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 22,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            const Icon(Icons.unfold_more, color: Colors.white70, size: 20),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.language, color: Colors.white70),
+                              onPressed: () => context.read<LocaleCubit>().toggleLocale(),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.brightness_6, color: Colors.white70),
+                              onPressed: () => context.read<ThemeCubit>().toggleTheme(),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Карточка лидера (1 место)
                 Positioned(
                   left: 0,
                   right: 0,
