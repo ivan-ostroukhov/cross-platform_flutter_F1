@@ -277,6 +277,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Country'**
   String get countryLabel;
+
+  /// No description provided for @pastRaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Past Races'**
+  String get pastRaces;
+
+  /// No description provided for @upcomingRaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Races'**
+  String get upcomingRaces;
+
+  /// No description provided for @raceCountdownPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Race starts in'**
+  String get raceCountdownPrefix;
+
+  /// No description provided for @daysShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Days'**
+  String get daysShort;
+
+  /// No description provided for @hoursShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Hours'**
+  String get hoursShort;
+
+  /// No description provided for @minutesShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Mins'**
+  String get minutesShort;
+
+  /// No description provided for @scheduleButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get scheduleButton;
+
+  /// No description provided for @resultsButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Results'**
+  String get resultsButton;
 }
 
 class _AppLocalizationsDelegate

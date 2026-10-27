@@ -99,4 +99,28 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get countryLabel => 'Страна';
+
+  @override
+  String get pastRaces => 'Прошедшие гонки';
+
+  @override
+  String get upcomingRaces => 'Предстоящие гонки';
+
+  @override
+  String get raceCountdownPrefix => 'Гонка начинается через';
+
+  @override
+  String get daysShort => 'Дни';
+
+  @override
+  String get hoursShort => 'Часы';
+
+  @override
+  String get minutesShort => 'Минуты';
+
+  @override
+  String get scheduleButton => 'Расписание';
+
+  @override
+  String get resultsButton => 'Результаты';
 }

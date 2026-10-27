@@ -99,4 +99,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get countryLabel => 'Country';
+
+  @override
+  String get pastRaces => 'Past Races';
+
+  @override
+  String get upcomingRaces => 'Upcoming Races';
+
+  @override
+  String get raceCountdownPrefix => 'Race starts in';
+
+  @override
+  String get daysShort => 'Days';
+
+  @override
+  String get hoursShort => 'Hours';
+
+  @override
+  String get minutesShort => 'Mins';
+
+  @override
+  String get scheduleButton => 'Schedule';
+
+  @override
+  String get resultsButton => 'Results';
 }

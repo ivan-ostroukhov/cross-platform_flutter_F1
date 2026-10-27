@@ -35,5 +35,16 @@
   "firstWinLabel": "First Win",
   "worldChampionshipsLabel": "World Championships",
   "dateOfBirthLabel": "Date of Birth",
-  "countryLabel": "Country"
+  "countryLabel": "Country",
+
+  "pastRaces": "Past Races",
+  "upcomingRaces": "Upcoming Races",
+  "raceCountdownPrefix": "Race starts in",
+  "daysShort": "Days",
+  "hoursShort": "Hours",
+  "minutesShort": "Mins",
+  "scheduleButton": "Schedule",
+  "resultsButton": "Results"
 }
+
+

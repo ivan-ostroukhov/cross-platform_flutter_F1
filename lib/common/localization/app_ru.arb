@@ -35,5 +35,14 @@
   "firstWinLabel": "Первая победа",
   "worldChampionshipsLabel": "Мировой чемпионат",
   "dateOfBirthLabel": "Дата рождения",
-  "countryLabel": "Страна"
+  "countryLabel": "Страна",
+
+  "pastRaces": "Прошедшие гонки",
+  "upcomingRaces": "Предстоящие гонки",
+  "raceCountdownPrefix": "Гонка начинается через",
+  "daysShort": "Дни",
+  "hoursShort": "Часы",
+  "minutesShort": "Минуты",
+  "scheduleButton": "Расписание",
+  "resultsButton": "Результаты"
 }
