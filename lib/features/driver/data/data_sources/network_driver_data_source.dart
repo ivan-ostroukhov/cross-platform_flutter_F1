@@ -38,6 +38,34 @@ class NetworkDriverDataSource implements IDriverDataSource {
     }
   }
 
+  @override
+  Future<Map<String, dynamic>> getDriverSeasonResults(String driverId) async {
+    try {
+      return await _api.getDriverSeasonResults(driverId);
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> getDriverCareerMilestones(String driverId) async {
+    try {
+      final results = await Future.wait([
+        _api.getDriverFirstRace(driverId),
+        _api.getDriverFirstWin(driverId),
+        _api.getDriverChampionships(driverId),
+      ]);
+
+      return {
+        'firstRace': results[0],
+        'firstWin': results[1],
+        'championships': results[2],
+      };
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
   LoadException _mapDioException(DioException e) {
     if (e.response?.statusCode == 404) {
       return const NotFoundLoadException();
