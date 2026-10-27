@@ -1,18 +1,36 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:f1_app/common/localization/generated/app_localizations.dart';
 import '../../../../common/utils/f1_colors.dart';
+import '../../data/repositories/schedule_repository.dart';
 import '../../domain/models/race_model.dart';
+import '../cubit/schedule_cubit.dart';
 
-class ScheduleScreen extends StatefulWidget {
+class ScheduleScreen extends StatelessWidget {
   const ScheduleScreen({super.key});
 
   @override
-  State<ScheduleScreen> createState() => _ScheduleScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => ScheduleCubit(ScheduleRepository())..loadSchedule(),
+      child: const _ScheduleView(),
+    );
+  }
 }
 
-class _ScheduleScreenState extends State<ScheduleScreen> {
+class _ScheduleView extends StatefulWidget {
+  const _ScheduleView();
+
+  @override
+  State<_ScheduleView> createState() => _ScheduleViewState();
+}
+
+class _ScheduleViewState extends State<_ScheduleView> {
   final Key _currentRaceKey = const ValueKey('current_race_hero');
   late final ScrollController _scrollController;
+  Timer? _countdownTimer;
+  Duration _remainingTime = Duration.zero;
 
   @override
   void initState() {
@@ -20,14 +38,31 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     _scrollController = ScrollController();
   }
 
+  void _initCountdown(DateTime? raceDate) {
+    _countdownTimer?.cancel();
+    if (raceDate == null) return;
+
+    void updateRemaining() {
+      final diff = raceDate.difference(DateTime.now());
+      if (mounted) {
+        setState(() {
+          _remainingTime = diff.isNegative ? Duration.zero : diff;
+        });
+      }
+    }
+
+    updateRemaining();
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (_) => updateRemaining());
+  }
+
   @override
   void dispose() {
+    _countdownTimer?.cancel();
     _scrollController.dispose();
     super.dispose();
   }
 
   void _scrollToPastRaces() {
-    // Плавно скроллим вверх в сторону прошедших гонок (на высоту двух карточек)
     final targetOffset = _scrollController.offset < -20 ? 0.0 : -220.0;
     _scrollController.animateTo(
       targetOffset,
@@ -41,314 +76,282 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     final l10n = AppLocalizations.of(context)!;
     const accentBlue = Color(0xFF15448C);
 
-    final currentRace = RaceModel(
-      round: '18',
-      raceName: 'Гран-при США',
-      circuitId: 'americas',
-      locality: 'Austin',
-      country: 'USA',
-      date: DateTime.now().add(const Duration(hours: 8, minutes: 3)),
-      dateRange: '23 - 26 Окт.',
-      isCompleted: false,
-    );
-
-    final pastRaces = [
-      RaceModel(
-        round: '17',
-        raceName: 'Гран-при Сингапура',
-        circuitId: 'marina_bay',
-        locality: 'Marina Bay',
-        country: 'Singapore',
-        dateRange: '',
-        date: DateTime(2026, 9, 20),
-        isCompleted: true,
-        podium: const [
-          PodiumDriver(code: 'VER', teamName: 'Red Bull'),
-          PodiumDriver(code: 'LEC', teamName: 'Ferrari'),
-          PodiumDriver(code: 'ANT', teamName: 'Mercedes'),
-        ],
-      ),
-      RaceModel(
-        round: '16',
-        raceName: 'Гран-при Бахрейна',
-        circuitId: 'bahrain',
-        locality: 'Kuala Lumpur',
-        country: 'Bahrain',
-        dateRange: '',
-        date: DateTime(2026, 9, 6),
-        isCompleted: true,
-        podium: const [
-          PodiumDriver(code: 'VER', teamName: 'Red Bull'),
-          PodiumDriver(code: 'ANT', teamName: 'Mercedes'),
-          PodiumDriver(code: 'HAM', teamName: 'Ferrari'),
-        ],
-      ),
-      RaceModel(
-        round: '15',
-        raceName: 'Гран-при Азербайджана',
-        circuitId: 'baku',
-        locality: 'Baku',
-        country: 'Azerbaijan',
-        dateRange: '',
-        date: DateTime(2026, 8, 30),
-        isCompleted: true,
-        podium: const [
-          PodiumDriver(code: 'RUS', teamName: 'Mercedes'),
-          PodiumDriver(code: 'VER', teamName: 'Red Bull'),
-          PodiumDriver(code: 'HAD', teamName: 'Red Bull'),
-        ],
-      ),
-    ];
-
-    final upcomingRaces = [
-      RaceModel(
-        round: '19',
-        raceName: 'Гран-при Мехико',
-        circuitId: 'rodriguez',
-        locality: 'Mexico City',
-        country: 'Mexico',
-        dateRange: '02 Нояб.',
-        date: DateTime(2026, 11, 2),
-        isCompleted: false,
-      ),
-      RaceModel(
-        round: '20',
-        raceName: 'São Paulo GP',
-        circuitId: 'interlagos',
-        locality: 'São Paulo',
-        country: 'Brazil',
-        dateRange: '08 Нояб.',
-        date: DateTime(2026, 11, 8),
-        isCompleted: false,
-      ),
-    ];
-
     return Scaffold(
       backgroundColor: Colors.black,
-      body: CustomScrollView(
-        controller: _scrollController,
-        center: _currentRaceKey,
-        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-        slivers: [
-          // 1. ПРОШЕДШИЕ ГОНКИ (расположены выше стартовой точки)
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                final race = pastRaces[index];
-                return _buildPastRaceTile(race);
-              },
-              childCount: pastRaces.length,
-            ),
-          ),
+      body: BlocConsumer<ScheduleCubit, ScheduleState>(
+        listener: (context, state) {
+          if (state is ScheduleLoaded && state.currentRace?.date != null) {
+            _initCountdown(state.currentRace!.date);
+          }
+        },
+        builder: (context, state) {
+          if (state is ScheduleLoading) {
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.white30),
+            );
+          }
 
-          // 2. СТАРТОВАЯ ТОЧКА: Кнопка «Прошедшие гонки» + Карточка текущего этапа
-          SliverToBoxAdapter(
-            key: _currentRaceKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Кнопка перехода к прошедшим гонкам
-                SafeArea(
-                  bottom: false,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 6),
-                    child: InkWell(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      onTap: _scrollToPastRaces,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            l10n.pastRaces,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
+          if (state is ScheduleError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    state.message,
+                    style: const TextStyle(color: Colors.white70),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: () => context.read<ScheduleCubit>().loadSchedule(),
+                    child: const Text('Повторить'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          if (state is! ScheduleLoaded) return const SizedBox.shrink();
+
+          final currentRace = state.currentRace;
+          final pastRaces = state.pastRaces;
+          final upcomingRaces = state.upcomingRaces;
+
+          final days = _remainingTime.inDays.toString().padLeft(2, '0');
+          final hours = (_remainingTime.inHours % 24).toString().padLeft(2, '0');
+          final minutes = (_remainingTime.inMinutes % 60).toString().padLeft(2, '0');
+
+          return CustomScrollView(
+            controller: _scrollController,
+            center: _currentRaceKey,
+            physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            slivers: [
+              // 1. Прошедшие гонки
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                      (context, index) => _buildPastRaceTile(pastRaces[index]),
+                  childCount: pastRaces.length,
+                ),
+              ),
+
+              // 2. Стартовая точка
+              SliverToBoxAdapter(
+                key: _currentRaceKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SafeArea(
+                      bottom: false,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 6),
+                        child: InkWell(
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          onTap: _scrollToPastRaces,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                l10n.pastRaces,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              const Icon(
+                                Icons.keyboard_arrow_up,
+                                color: Colors.white70,
+                                size: 24,
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 6),
-                          const Icon(
-                            Icons.keyboard_arrow_up,
-                            color: Colors.white70,
-                            size: 24,
-                          ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                ),
 
-                // Карточка текущей гонки
-                SizedBox(
-                  height: 310,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      // Градиент
-                      Positioned.fill(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: RadialGradient(
-                              center: const Alignment(0.7, -0.5),
-                              radius: 1.3,
-                              stops: const [0.0, 0.45, 0.8, 1.0],
-                              colors: [
-                                accentBlue.withValues(alpha: 0.65),
-                                accentBlue.withValues(alpha: 0.30),
-                                accentBlue.withValues(alpha: 0.08),
-                                Colors.black,
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
+                    if (currentRace != null)
+                      SizedBox(
+                        height: 310,
 
-                      // Изометрия трассы
-                      Positioned(
-                        right: 8,
-                        top: 10,
-                        width: 200,
-                        height: 180,
-                        child: Icon(
-                          Icons.polyline_rounded,
-                          size: 150,
-                          color: Colors.blueAccent.withValues(alpha: 0.85),
-                        ),
-                      ),
-
-                      // Текст текущей гонки
-                      Positioned(
-                        left: 16,
-                        top: 16,
-                        right: 180,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Stack(
+                          clipBehavior: Clip.none,
                           children: [
-                            Text(
-                              'Раунд ${currentRace.round}',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.white.withValues(alpha: 0.65),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              currentRace.raceName,
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w900,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              currentRace.locality,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white.withValues(alpha: 0.5),
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              currentRace.dateRange,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // Таймер
-                      Positioned(
-                        left: 16,
-                        bottom: 20,
-                        right: 16,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  l10n.raceCountdownPrefix,
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: Colors.white.withValues(alpha: 0.6),
+                            Positioned.fill(
+                              right: -100,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: RadialGradient(
+                                    center: const Alignment(0.9, -0.5),
+                                    radius: 0.75,
+                                    stops: const [0.0, 0.45, 0.8, 0.8],
+                                    colors: [
+                                      accentBlue.withValues(alpha: 0.65),
+                                      accentBlue.withValues(alpha: 0.30),
+                                      accentBlue.withValues(alpha: 0.08),
+                                      Colors.black,
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    _buildCountdownItem('00', l10n.daysShort),
-                                    const SizedBox(width: 14),
-                                    _buildCountdownItem('08', l10n.hoursShort),
-                                    const SizedBox(width: 14),
-                                    _buildCountdownItem('03', l10n.minutesShort),
-                                  ],
-                                ),
-                              ],
+                              ),
                             ),
 
-                            ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white.withValues(alpha: 0.14),
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
+                            Positioned.fill(
+                              right: 180,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: RadialGradient(
+                                    center: const Alignment(-0.9, 0.8),
+                                    radius: 0.75,
+                                    stops: const [0.0, 0.45, 0.8, 0.8],
+                                    colors: [
+                                      accentBlue.withValues(alpha: 0.65),
+                                      accentBlue.withValues(alpha: 0.30),
+                                      accentBlue.withValues(alpha: 0.08),
+                                      Colors.black,
+                                    ],
+                                  ),
                                 ),
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                                elevation: 0,
                               ),
-                              icon: const Icon(Icons.access_time, size: 16),
-                              label: Text(l10n.scheduleButton, style: const TextStyle(fontSize: 13)),
-                              onPressed: () {},
+                            ),
+
+                            Positioned(
+                              right: 8,
+                              top: 10,
+                              width: 200,
+                              height: 180,
+                              child: Icon(
+                                Icons.polyline_rounded,
+                                size: 150,
+                                color: Colors.blueAccent.withValues(alpha: 0.85),
+                              ),
+                            ),
+                            Positioned(
+                              left: 16,
+                              top: 16,
+                              right: 180,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Раунд ${currentRace.round}',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.white.withValues(alpha: 0.65),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    currentRace.raceName,
+                                    style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w900,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    currentRace.locality,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white.withValues(alpha: 0.5),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    currentRace.dateRange,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Positioned(
+                              left: 16,
+                              bottom: 20,
+                              right: 16,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        l10n.raceCountdownPrefix,
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          color: Colors.white.withValues(alpha: 0.6),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          _buildCountdownItem(days, l10n.daysShort),
+                                          const SizedBox(width: 14),
+                                          _buildCountdownItem(hours, l10n.hoursShort),
+                                          const SizedBox(width: 14),
+                                          _buildCountdownItem(minutes, l10n.minutesShort),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  ElevatedButton.icon(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.white.withValues(alpha: 0.14),
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                                      elevation: 0,
+                                    ),
+                                    icon: const Icon(Icons.access_time, size: 16),
+                                    label: Text(l10n.scheduleButton, style: const TextStyle(fontSize: 13)),
+                                    onPressed: () {},
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Positioned(
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              height: 24,
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [Colors.transparent, Colors.black],
+                                  ),
+                                ),
+                              ),
                             ),
                           ],
                         ),
                       ),
-
-                      // Нижнее растворение
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        height: 24,
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [Colors.transparent, Colors.black],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
 
-          // 3. ПРЕДСТОЯЩИЕ ГОНКИ (расположены ниже)
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                final race = upcomingRaces[index];
-                return _buildUpcomingRaceTile(race);
-              },
-              childCount: upcomingRaces.length,
-            ),
-          ),
+              // 3. Предстоящие гонки
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                      (context, index) => _buildUpcomingRaceTile(upcomingRaces[index]),
+                  childCount: upcomingRaces.length,
+                ),
+              ),
 
-          const SliverToBoxAdapter(child: SizedBox(height: 90)),
-        ],
+              const SliverToBoxAdapter(child: SizedBox(height: 90)),
+            ],
+          );
+        },
       ),
     );
   }
@@ -411,7 +414,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       ),
                     ),
                     const SizedBox(height: 6),
-                    if (race.podium != null)
+                    if (race.podium != null && race.podium!.isNotEmpty)
                       Row(
                         children: race.podium!.map((driver) {
                           final teamColor = F1Colors.getTeamColor(driver.teamName);
@@ -470,7 +473,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      race.dateRange.split(' ').first,
+                      race.dateRange.isNotEmpty ? race.dateRange.split(' ').first : '--',
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
