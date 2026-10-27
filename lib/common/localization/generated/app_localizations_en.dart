@@ -55,4 +55,72 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get raceUpcoming => 'Upcoming';
+
+  @override
+  String get driverPositionShort => 'pos';
+
+  @override
+  String get driverPointsShort => 'pts';
+
+  @override
+  String get winsLabel => 'Wins';
+
+  @override
+  String get podiumsLabel => 'Podiums';
+
+  @override
+  String get polesLabel => 'Poles';
+
+  @override
+  String get dnfsLabel => 'DNFs';
+
+  @override
+  String seasonPrefix(String year) {
+    return '$year Season';
+  }
+
+  @override
+  String get driverCodeLabel => 'Driver Code';
+
+  @override
+  String get teamLabel => 'Team';
+
+  @override
+  String get firstRaceLabel => 'First Entry';
+
+  @override
+  String get firstWinLabel => 'First Win';
+
+  @override
+  String get worldChampionshipsLabel => 'World Championships';
+
+  @override
+  String get dateOfBirthLabel => 'Date of Birth';
+
+  @override
+  String get countryLabel => 'Country';
+
+  @override
+  String get pastRaces => 'Past Races';
+
+  @override
+  String get upcomingRaces => 'Upcoming Races';
+
+  @override
+  String get raceCountdownPrefix => 'Race starts in';
+
+  @override
+  String get daysShort => 'Days';
+
+  @override
+  String get hoursShort => 'Hours';
+
+  @override
+  String get minutesShort => 'Mins';
+
+  @override
+  String get scheduleButton => 'Schedule';
+
+  @override
+  String get resultsButton => 'Results';
 }

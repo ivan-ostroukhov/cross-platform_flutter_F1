@@ -55,4 +55,72 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get raceUpcoming => 'Предстоит';
+
+  @override
+  String get driverPositionShort => 'поз';
+
+  @override
+  String get driverPointsShort => 'блв';
+
+  @override
+  String get winsLabel => 'Победы';
+
+  @override
+  String get podiumsLabel => 'Подиумы';
+
+  @override
+  String get polesLabel => 'Поулы';
+
+  @override
+  String get dnfsLabel => 'DNFs';
+
+  @override
+  String seasonPrefix(String year) {
+    return '$year Сезон';
+  }
+
+  @override
+  String get driverCodeLabel => 'Код гонщика';
+
+  @override
+  String get teamLabel => 'Команда';
+
+  @override
+  String get firstRaceLabel => 'Первая гонка';
+
+  @override
+  String get firstWinLabel => 'Первая победа';
+
+  @override
+  String get worldChampionshipsLabel => 'Мировой чемпионат';
+
+  @override
+  String get dateOfBirthLabel => 'Дата рождения';
+
+  @override
+  String get countryLabel => 'Страна';
+
+  @override
+  String get pastRaces => 'Прошедшие гонки';
+
+  @override
+  String get upcomingRaces => 'Предстоящие гонки';
+
+  @override
+  String get raceCountdownPrefix => 'Гонка начинается через';
+
+  @override
+  String get daysShort => 'Дни';
+
+  @override
+  String get hoursShort => 'Часы';
+
+  @override
+  String get minutesShort => 'Минуты';
+
+  @override
+  String get scheduleButton => 'Расписание';
+
+  @override
+  String get resultsButton => 'Результаты';
 }

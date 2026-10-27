@@ -28,7 +28,6 @@ class DriverRepository implements IDriverRepository {
 
   @override
   Future<DriverModel?> getDriverById(String id) async {
-// Параллельно запрашиваем список сезона и карточку конкретного пилота
     final results = await Future.wait([
       _dataSource.getDriverStandings(),
       _dataSource
