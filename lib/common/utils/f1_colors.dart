@@ -1,33 +1,35 @@
 import 'package:flutter/material.dart';
 
 class F1Colors {
-  const F1Colors._();
+  static const List<Color> circuitPalette = [
+    Color(0xFF0F5A28), // зеленый (São Paulo / Brazil)
+    Color(0xFF15448C), // синий (Las Vegas / USA)
+    Color(0xFF7A1828), // бордовый (Qatar)
+    Color(0xFF0E7A6B), // бирюзовый (Abu Dhabi)
+    Color(0xFFB55A12), // терракотовый
+    Color(0xFF5B2382), // фиолетовый
+    Color(0xFF1E3D59), // глубокий индиго
+    Color(0xFF8B263E), // рубиновый
+  ];
 
-  static Color getTeamColor(String? teamName) {
-    if (teamName == null) return Colors.grey;
-    final name = teamName.toLowerCase();
+  static Color getCircuitColor(String key) {
+    if (key.isEmpty) return circuitPalette.first;
+    final hash = key.codeUnits.fold<int>(0, (acc, val) => acc + val);
+    return circuitPalette[hash % circuitPalette.length];
+  }
 
-    if (name.contains('mercedes')) {
-      return const Color(0xFF27F4D2);
-    } else if (name.contains('ferrari')) {
-      return const Color(0xFFE80020);
-    } else if (name.contains('red bull') || name.contains('redbull')) {
-      return const Color(0xFF3671C6);
-    } else if (name.contains('mclaren')) {
-      return const Color(0xFFFF8000);
-    } else if (name.contains('aston martin')) {
-      return const Color(0xFF229971);
-    } else if (name.contains('alpine')) {
-      return const Color(0xFFFF87BC);
-    } else if (name.contains('williams')) {
-      return const Color(0xFF64C4FF);
-    } else if (name.contains('rb') || name.contains('racing bulls')) {
-      return const Color(0xFF6692FF);
-    } else if (name.contains('sauber') || name.contains('kick')) {
-      return const Color(0xFF52E252);
-    } else if (name.contains('haas')) {
-      return const Color(0xFFB6BABD);
-    }
-    return Colors.white70;
+  static Color getTeamColor(String teamName) {
+    final lower = teamName.toLowerCase();
+    if (lower.contains('red bull')) return const Color(0xFF3671C6);
+    if (lower.contains('ferrari')) return const Color(0xFFE80020);
+    if (lower.contains('mercedes')) return const Color(0xFF27F4D2);
+    if (lower.contains('mclaren')) return const Color(0xFFFF8000);
+    if (lower.contains('aston')) return const Color(0xFF229971);
+    if (lower.contains('alpine')) return const Color(0xFFFF87BC);
+    if (lower.contains('williams')) return const Color(0xFF64C4FF);
+    if (lower.contains('haas')) return const Color(0xFFB6BABD);
+    if (lower.contains('rb') || lower.contains('racing bulls')) return const Color(0xFF6692FF);
+    if (lower.contains('sauber') || lower.contains('kick')) return const Color(0xFF52E252);
+    return Colors.white54;
   }
 }

@@ -6,6 +6,7 @@ import '../../../../common/utils/f1_colors.dart';
 import '../../data/repositories/schedule_repository.dart';
 import '../../domain/models/race_model.dart';
 import '../cubit/schedule_cubit.dart';
+import 'race_detail_screen.dart';
 
 class ScheduleScreen extends StatelessWidget {
   const ScheduleScreen({super.key});
@@ -71,10 +72,17 @@ class _ScheduleViewState extends State<_ScheduleView> {
     );
   }
 
+  void _openRaceDetail(BuildContext context, RaceModel race) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => RaceDetailScreen(race: race),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    const accentBlue = Color(0xFF15448C);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -117,6 +125,12 @@ class _ScheduleViewState extends State<_ScheduleView> {
           final pastRaces = state.pastRaces;
           final upcomingRaces = state.upcomingRaces;
 
+          final currentCircuitColor = currentRace != null
+              ? F1Colors.getCircuitColor(
+            currentRace.circuitId.isNotEmpty ? currentRace.circuitId : currentRace.raceName,
+          )
+              : const Color(0xFF15448C);
+
           final days = _remainingTime.inDays.toString().padLeft(2, '0');
           final hours = (_remainingTime.inHours % 24).toString().padLeft(2, '0');
           final minutes = (_remainingTime.inMinutes % 60).toString().padLeft(2, '0');
@@ -126,15 +140,12 @@ class _ScheduleViewState extends State<_ScheduleView> {
             center: _currentRaceKey,
             physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
             slivers: [
-              // 1. Прошедшие гонки
               SliverList(
                 delegate: SliverChildBuilderDelegate(
-                      (context, index) => _buildPastRaceTile(pastRaces[index]),
+                      (context, index) => _buildPastRaceTile(context, pastRaces[index]),
                   childCount: pastRaces.length,
                 ),
               ),
-
-              // 2. Стартовая точка
               SliverToBoxAdapter(
                 key: _currentRaceKey,
                 child: Column(
@@ -170,11 +181,9 @@ class _ScheduleViewState extends State<_ScheduleView> {
                         ),
                       ),
                     ),
-
                     if (currentRace != null)
                       SizedBox(
                         height: 310,
-
                         child: Stack(
                           clipBehavior: Clip.none,
                           children: [
@@ -187,16 +196,15 @@ class _ScheduleViewState extends State<_ScheduleView> {
                                     radius: 0.75,
                                     stops: const [0.0, 0.45, 0.8, 0.8],
                                     colors: [
-                                      accentBlue.withValues(alpha: 0.65),
-                                      accentBlue.withValues(alpha: 0.30),
-                                      accentBlue.withValues(alpha: 0.08),
+                                      currentCircuitColor.withValues(alpha: 0.65),
+                                      currentCircuitColor.withValues(alpha: 0.30),
+                                      currentCircuitColor.withValues(alpha: 0.08),
                                       Colors.black,
                                     ],
                                   ),
                                 ),
                               ),
                             ),
-
                             Positioned.fill(
                               right: 180,
                               child: Container(
@@ -206,16 +214,15 @@ class _ScheduleViewState extends State<_ScheduleView> {
                                     radius: 0.75,
                                     stops: const [0.0, 0.45, 0.8, 0.8],
                                     colors: [
-                                      accentBlue.withValues(alpha: 0.65),
-                                      accentBlue.withValues(alpha: 0.30),
-                                      accentBlue.withValues(alpha: 0.08),
+                                      currentCircuitColor.withValues(alpha: 0.65),
+                                      currentCircuitColor.withValues(alpha: 0.30),
+                                      currentCircuitColor.withValues(alpha: 0.08),
                                       Colors.black,
                                     ],
                                   ),
                                 ),
                               ),
                             ),
-
                             Positioned(
                               right: 8,
                               top: 10,
@@ -224,7 +231,7 @@ class _ScheduleViewState extends State<_ScheduleView> {
                               child: Icon(
                                 Icons.polyline_rounded,
                                 size: 150,
-                                color: Colors.blueAccent.withValues(alpha: 0.85),
+                                color: currentCircuitColor.withValues(alpha: 0.85),
                               ),
                             ),
                             Positioned(
@@ -313,7 +320,7 @@ class _ScheduleViewState extends State<_ScheduleView> {
                                     ),
                                     icon: const Icon(Icons.access_time, size: 16),
                                     label: Text(l10n.scheduleButton, style: const TextStyle(fontSize: 13)),
-                                    onPressed: () {},
+                                    onPressed: () => _openRaceDetail(context, currentRace),
                                   ),
                                 ],
                               ),
@@ -339,15 +346,12 @@ class _ScheduleViewState extends State<_ScheduleView> {
                   ],
                 ),
               ),
-
-              // 3. Предстоящие гонки
               SliverList(
                 delegate: SliverChildBuilderDelegate(
-                      (context, index) => _buildUpcomingRaceTile(upcomingRaces[index]),
+                      (context, index) => _buildUpcomingRaceTile(context, upcomingRaces[index]),
                   childCount: upcomingRaces.length,
                 ),
               ),
-
               const SliverToBoxAdapter(child: SizedBox(height: 90)),
             ],
           );
@@ -380,148 +384,198 @@ class _ScheduleViewState extends State<_ScheduleView> {
     );
   }
 
-  static Widget _buildPastRaceTile(RaceModel race) {
+  static Widget _buildPastRaceTile(BuildContext context, RaceModel race) {
+    final circuitColor = F1Colors.getCircuitColor(
+      race.circuitId.isNotEmpty ? race.circuitId : race.raceName,
+    );
+
     return Column(
       children: [
         Divider(color: Colors.white.withValues(alpha: 0.07), height: 1),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Row(
-            children: [
-              SizedBox(
-                width: 44,
-                child: Icon(Icons.timeline, color: Colors.white.withValues(alpha: 0.7)),
+        InkWell(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => RaceDetailScreen(race: race),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      race.raceName,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'R${race.round} • ${race.locality}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.white54,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    if (race.podium != null && race.podium!.isNotEmpty)
-                      Row(
-                        children: race.podium!.map((driver) {
-                          final teamColor = F1Colors.getTeamColor(driver.teamName);
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 14,
-                                  height: 4,
-                                  decoration: BoxDecoration(
-                                    color: teamColor,
-                                    borderRadius: BorderRadius.circular(2),
-                                  ),
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  driver.code,
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white70,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                  ],
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 44,
+                  child: Icon(Icons.timeline, color: Colors.white.withValues(alpha: 0.7)),
                 ),
-              ),
-              Icon(
-                Icons.chevron_right,
-                color: Colors.white.withValues(alpha: 0.35),
-                size: 20,
-              ),
-            ],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        race.raceName,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      RichText(
+                        text: TextSpan(
+                          text: 'R${race.round} • ',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.white54,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: race.locality,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: circuitColor.withValues(alpha: 0.95),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      if (race.podium != null && race.podium!.isNotEmpty)
+                        Row(
+                          children: race.podium!.map((driver) {
+                            final teamColor = F1Colors.getTeamColor(driver.teamName);
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 14,
+                                    height: 4,
+                                    decoration: BoxDecoration(
+                                      color: teamColor,
+                                      borderRadius: BorderRadius.circular(2),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    driver.code,
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.chevron_right,
+                  color: Colors.white.withValues(alpha: 0.35),
+                  size: 20,
+                ),
+              ],
+            ),
           ),
         ),
       ],
     );
   }
 
-  static Widget _buildUpcomingRaceTile(RaceModel race) {
+  static Widget _buildUpcomingRaceTile(BuildContext context, RaceModel race) {
+    final circuitColor = F1Colors.getCircuitColor(
+      race.circuitId.isNotEmpty ? race.circuitId : race.raceName,
+    );
+
     return Column(
       children: [
         Divider(color: Colors.white.withValues(alpha: 0.07), height: 1),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Row(
-            children: [
-              SizedBox(
-                width: 48,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      race.dateRange.isNotEmpty ? race.dateRange.split(' ').first : '--',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+        InkWell(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => RaceDetailScreen(race: race),
+              ),
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 48,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        race.dateRange.isNotEmpty ? race.dateRange.split(' ').first : '--',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    Text(
-                      race.dateRange.split(' ').length > 1 ? race.dateRange.split(' ').last : '',
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: Colors.white54,
+                      Text(
+                        race.dateRange.split(' ').length > 1 ? race.dateRange.split(' ').last : '',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Colors.white54,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      race.raceName,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        race.raceName,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'R${race.round} • ${race.locality}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.white54,
+                      const SizedBox(height: 2),
+                      RichText(
+                        text: TextSpan(
+                          text: 'R${race.round} • ',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.white54,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: race.locality,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: circuitColor.withValues(alpha: 0.95),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Icon(Icons.timeline, color: Colors.white.withValues(alpha: 0.6)),
-              const SizedBox(width: 6),
-              Icon(
-                Icons.chevron_right,
-                color: Colors.white.withValues(alpha: 0.35),
-                size: 20,
-              ),
-            ],
+                Icon(Icons.timeline, color: Colors.white.withValues(alpha: 0.6)),
+                const SizedBox(width: 6),
+                Icon(
+                  Icons.chevron_right,
+                  color: Colors.white.withValues(alpha: 0.35),
+                  size: 20,
+                ),
+              ],
+            ),
           ),
         ),
       ],
