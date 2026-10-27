@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../common/utils/f1_colors.dart';
-import '../../domain/models/race_detail_model.dart';
+import '../../domain/models/circuit_stats.dart';
 import '../../domain/models/race_model.dart';
 
 class RaceDetailScreen extends StatelessWidget {
@@ -17,50 +17,7 @@ class RaceDetailScreen extends StatelessWidget {
       race.circuitId.isNotEmpty ? race.circuitId : race.raceName,
     );
 
-    final detail = RaceDetailModel(
-      raceName: race.raceName.isNotEmpty ? race.raceName : 'São Paulo GP',
-      circuitName: race.circuitName.isNotEmpty
-          ? race.circuitName
-          : 'Autódromo José Carlos Pace',
-      dateRange: race.dateRange.isNotEmpty ? race.dateRange : '06 - 08 Ноября',
-      lengthKm: '4.309',
-      laps: 71,
-      corners: 15,
-      maxSpeed: '338.3',
-      elevation: '42.98',
-      sessions: const [
-        WeekendSession(
-          day: '06',
-          dayOfWeek: 'ПТ',
-          title: 'Practice 1',
-          timeRange: '21:30 - 22:30',
-        ),
-        WeekendSession(
-          day: '07',
-          dayOfWeek: 'СБ',
-          title: 'Practice 2',
-          timeRange: '01:00 - 02:00',
-        ),
-        WeekendSession(
-          day: '07',
-          dayOfWeek: 'СБ',
-          title: 'Practice 3',
-          timeRange: '20:30 - 21:30',
-        ),
-        WeekendSession(
-          day: '08',
-          dayOfWeek: 'ВС',
-          title: 'Qualifying',
-          timeRange: '00:00 - 01:00',
-        ),
-        WeekendSession(
-          day: '08',
-          dayOfWeek: 'ВС',
-          title: 'Race',
-          timeRange: '23:00 - 01:00',
-        ),
-      ],
-    );
+    final stats = CircuitStats.getFor(race.circuitId);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -122,7 +79,7 @@ class RaceDetailScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          detail.raceName,
+                          race.raceName,
                           style: const TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.w900,
@@ -132,7 +89,7 @@ class RaceDetailScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          detail.circuitName,
+                          race.circuitName,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -141,7 +98,7 @@ class RaceDetailScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          detail.dateRange,
+                          race.dateRange,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -162,7 +119,7 @@ class RaceDetailScreen extends StatelessWidget {
                                     textBaseline: TextBaseline.alphabetic,
                                     children: [
                                       Text(
-                                        detail.lengthKm,
+                                        stats.lengthKm,
                                         style: const TextStyle(
                                           fontSize: 34,
                                           fontWeight: FontWeight.w900,
@@ -182,27 +139,27 @@ class RaceDetailScreen extends StatelessWidget {
                                     ],
                                   ),
                                   const SizedBox(height: 18),
-                                  _buildStatItem(
+                                  _StatRow(
                                     icon: Icons.repeat_rounded,
-                                    value: '${detail.laps}',
+                                    value: '${stats.laps}',
                                     label: 'Количество кругов',
                                   ),
                                   const SizedBox(height: 14),
-                                  _buildStatItem(
+                                  _StatRow(
                                     icon: Icons.alt_route_rounded,
-                                    value: '${detail.corners}',
+                                    value: '${stats.corners}',
                                     label: 'Повороты',
                                   ),
                                   const SizedBox(height: 14),
-                                  _buildStatItem(
+                                  _StatRow(
                                     icon: Icons.speed_rounded,
-                                    value: '${detail.maxSpeed} км/ч',
+                                    value: '${stats.maxSpeed} км/ч',
                                     label: 'Максимальная скорость',
                                   ),
                                   const SizedBox(height: 14),
-                                  _buildStatItem(
+                                  _StatRow(
                                     icon: Icons.height_rounded,
-                                    value: '${detail.elevation} м',
+                                    value: '${stats.elevation} м',
                                     label: 'Перепад высот',
                                   ),
                                 ],
@@ -255,10 +212,10 @@ class RaceDetailScreen extends StatelessWidget {
             SliverList(
               delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                  final session = detail.sessions[index];
-                  return _buildSessionTile(session);
+                  final session = race.sessions[index];
+                  return _SessionTile(session: session);
                 },
-                childCount: detail.sessions.length,
+                childCount: race.sessions.length,
               ),
             ),
             const SliverToBoxAdapter(
@@ -269,12 +226,21 @@ class RaceDetailScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  static Widget _buildStatItem({
-    required IconData icon,
-    required String value,
-    required String label,
-  }) {
+class _StatRow extends StatelessWidget {
+  final IconData icon;
+  final String value;
+  final String label;
+
+  const _StatRow({
+    required this.icon,
+    required this.value,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -304,8 +270,15 @@ class RaceDetailScreen extends StatelessWidget {
       ],
     );
   }
+}
 
-  static Widget _buildSessionTile(WeekendSession session) {
+class _SessionTile extends StatelessWidget {
+  final RaceSession session;
+
+  const _SessionTile({required this.session});
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
         Divider(

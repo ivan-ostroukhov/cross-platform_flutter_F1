@@ -32,11 +32,22 @@ class _ScheduleViewState extends State<_ScheduleView> {
   late final ScrollController _scrollController;
   Timer? _countdownTimer;
   Duration _remainingTime = Duration.zero;
+  bool _isPastRacesExpanded = false;
 
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController();
+    _scrollController = ScrollController()..addListener(_handleScroll);
+  }
+
+  void _handleScroll() {
+    if (!_scrollController.hasClients) return;
+    final isExpanded = _scrollController.offset < -60;
+    if (_isPastRacesExpanded != isExpanded) {
+      setState(() {
+        _isPastRacesExpanded = isExpanded;
+      });
+    }
   }
 
   void _initCountdown(DateTime? raceDate) {
@@ -59,16 +70,25 @@ class _ScheduleViewState extends State<_ScheduleView> {
   @override
   void dispose() {
     _countdownTimer?.cancel();
+    _scrollController.removeListener(_handleScroll);
     _scrollController.dispose();
     super.dispose();
   }
 
   void _scrollToPastRaces() {
-    final targetOffset = _scrollController.offset < -20 ? 0.0 : -220.0;
+    if (!_scrollController.hasClients) return;
+
+    final willExpand = !_isPastRacesExpanded;
+    setState(() {
+      _isPastRacesExpanded = willExpand;
+    });
+
+    final targetOffset = willExpand ? -450.0 : 0.0;
+
     _scrollController.animateTo(
       targetOffset,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeInOutCubic,
+      duration: const Duration(milliseconds: 450),
+      curve: Curves.easeOutCubic,
     );
   }
 
@@ -171,10 +191,15 @@ class _ScheduleViewState extends State<_ScheduleView> {
                                 ),
                               ),
                               const SizedBox(width: 6),
-                              const Icon(
-                                Icons.keyboard_arrow_up,
-                                color: Colors.white70,
-                                size: 24,
+                              AnimatedRotation(
+                                turns: _isPastRacesExpanded ? 0.5 : 0.0,
+                                duration: const Duration(milliseconds: 200),
+                                curve: Curves.easeOutQuad,
+                                child: const Icon(
+                                  Icons.keyboard_arrow_up,
+                                  color: Colors.white70,
+                                  size: 24,
+                                ),
                               ),
                             ],
                           ),

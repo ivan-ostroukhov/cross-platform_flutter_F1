@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class RaceModel {
   final String round;
   final String raceName;
@@ -9,6 +11,7 @@ class RaceModel {
   final String dateRange;
   final bool isCompleted;
   final List<PodiumDriver>? podium;
+  final List<RaceSession> sessions;
 
   const RaceModel({
     required this.round,
@@ -21,32 +24,68 @@ class RaceModel {
     required this.dateRange,
     required this.isCompleted,
     this.podium,
+    this.sessions = const [],
   });
 
   factory RaceModel.fromJson(Map<String, dynamic> json, {List<PodiumDriver>? podium}) {
     final circuit = json['Circuit'] as Map<String, dynamic>? ?? {};
     final location = circuit['Location'] as Map<String, dynamic>? ?? {};
 
-    DateTime? raceDate;
-    final dateStr = json['date'] as String?;
-    final timeStr = json['time'] as String?;
-    if (dateStr != null) {
-      final isoString = timeStr != null ? '${dateStr}T$timeStr' : dateStr;
-      raceDate = DateTime.tryParse(isoString);
+    DateTime? parseUtc(String? d, String? t) {
+      if (d == null) return null;
+      final iso = t != null ? '${d}T$t' : d;
+      return DateTime.tryParse(iso)?.toLocal();
     }
 
+    final raceDate = parseUtc(json['date'] as String?, json['time'] as String?);
     final now = DateTime.now();
     final isCompleted = raceDate != null ? raceDate.isBefore(now) : false;
 
-    String formattedDateRange = '';
+    final parsedSessions = <RaceSession>[];
+
+    void addSession(String title, Map<String, dynamic>? sessionJson, Duration duration) {
+      if (sessionJson == null) return;
+      final start = parseUtc(sessionJson['date'] as String?, sessionJson['time'] as String?);
+      if (start != null) {
+        parsedSessions.add(
+          RaceSession(
+            title: title,
+            startTime: start,
+            endTime: start.add(duration),
+          ),
+        );
+      }
+    }
+
+    addSession('Practice 1', json['FirstPractice'] as Map<String, dynamic>?, const Duration(minutes: 60));
+    addSession('Practice 2', json['SecondPractice'] as Map<String, dynamic>?, const Duration(minutes: 60));
+    addSession('Practice 3', json['ThirdPractice'] as Map<String, dynamic>?, const Duration(minutes: 60));
+    addSession('Sprint Qualifying', json['SprintQualifying'] as Map<String, dynamic>?, const Duration(minutes: 44));
+    addSession('Sprint', json['Sprint'] as Map<String, dynamic>?, const Duration(minutes: 60));
+    addSession('Qualifying', json['Qualifying'] as Map<String, dynamic>?, const Duration(minutes: 60));
+
     if (raceDate != null) {
-      final day = raceDate.day.toString().padLeft(2, '0');
-      const months = [
-        'Янв.', 'Фев.', 'Мар.', 'Апр.', 'Май', 'Июн.',
-        'Июл.', 'Авг.', 'Сен.', 'Окт.', 'Нояб.', 'Дек.'
-      ];
-      final month = months[raceDate.month - 1];
-      formattedDateRange = '$day $month';
+      parsedSessions.add(
+        RaceSession(
+          title: 'Race',
+          startTime: raceDate,
+          endTime: raceDate.add(const Duration(hours: 2)),
+        ),
+      );
+    }
+
+    parsedSessions.sort((a, b) => a.startTime.compareTo(b.startTime));
+
+    String formattedRange = '';
+    if (parsedSessions.isNotEmpty) {
+      final start = parsedSessions.first.startTime;
+      final end = parsedSessions.last.startTime;
+      final startDay = DateFormat('dd').format(start);
+      final endDay = DateFormat('dd').format(end);
+      final month = DateFormat('MMM', 'ru').format(end);
+      formattedRange = '$startDay - $endDay $month';
+    } else if (raceDate != null) {
+      formattedRange = DateFormat('dd MMM', 'ru').format(raceDate);
     }
 
     return RaceModel(
@@ -57,26 +96,29 @@ class RaceModel {
       locality: location['locality'] as String? ?? '',
       country: location['country'] as String? ?? '',
       date: raceDate,
-      dateRange: formattedDateRange,
+      dateRange: formattedRange,
       isCompleted: isCompleted,
       podium: podium,
+      sessions: parsedSessions,
     );
   }
+}
 
-  RaceModel copyWith({List<PodiumDriver>? podium}) {
-    return RaceModel(
-      round: round,
-      raceName: raceName,
-      circuitId: circuitId,
-      circuitName: circuitName,
-      locality: locality,
-      country: country,
-      date: date,
-      dateRange: dateRange,
-      isCompleted: isCompleted,
-      podium: podium ?? this.podium,
-    );
-  }
+class RaceSession {
+  final String title;
+  final DateTime startTime;
+  final DateTime endTime;
+
+  const RaceSession({
+    required this.title,
+    required this.startTime,
+    required this.endTime,
+  });
+
+  String get day => DateFormat('dd').format(startTime);
+  String get dayOfWeek => DateFormat('E', 'ru').format(startTime).toUpperCase();
+  String get timeRange =>
+      '${DateFormat('HH:mm').format(startTime)} - ${DateFormat('HH:mm').format(endTime)}';
 }
 
 class PodiumDriver {
