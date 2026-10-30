@@ -8,10 +8,12 @@ class LocalStorageService {
   static Map<String, dynamic>? _bundledPodiums;
 
   static Future<void> init() async {
-    await Hive.initFlutter();
-    _box = await Hive.openBox(_boxName);
-    await _loadBundledJson();
-    await _seedInitialData();
+    try {
+      await Hive.initFlutter();
+      _box = await Hive.openBox(_boxName);
+      await _loadBundledJson();
+      await _seedInitialData();
+    } catch (_) {}
   }
 
   static Future<void> _loadBundledJson() async {

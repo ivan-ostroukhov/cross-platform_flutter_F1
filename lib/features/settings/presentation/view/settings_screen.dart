@@ -11,6 +11,7 @@ import '../../../driver/domain/i_driver_repository.dart';
 import '../../../driver/domain/driver_model.dart';
 import '../../../constructor/domain/constructor_repository.dart';
 import '../../../constructor/domain/constructor_model.dart';
+import '../../../widgets/data/desktop_widget_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -440,6 +441,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                     onTap: () => context.read<LocaleCubit>().toggleLocale(),
+                  ),
+                  _buildDivider(),
+
+                  _buildSettingRow(
+                    icon: Icons.widgets_outlined,
+                    title: 'Виджет часов на рабочий стол',
+                    trailing: const Icon(Icons.add_circle_outline, color: Colors.redAccent, size: 22),
+                    onTap: () async {
+                      final success = await DesktopWidgetService.createClockWidget();
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              success
+                                  ? 'Виджет часов создан на рабочем столе!'
+                                  : 'Не удалось создать виджет',
+                            ),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    },
                   ),
                 ],
               ),
