@@ -9,9 +9,10 @@ class ConstructorRemoteDataSource implements IConstructorDataSource {
   const ConstructorRemoteDataSource(this._dio);
 
   @override
-  Future<List<ConstructorStandingDto>> getConstructorStandings() async {
+  Future<List<ConstructorStandingDto>> getConstructorStandings({String? season}) async {
     try {
-      final response = await _dio.get('/current/constructorStandings.json');
+      final s = season ?? 'current';
+      final response = await _dio.get('/$s/constructorStandings.json');
       if (response.data == null) {
         throw const NetworkLoadException();
       }

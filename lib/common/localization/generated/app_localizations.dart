@@ -164,6 +164,12 @@ abstract class AppLocalizations {
   /// **'Constructors'**
   String get constructorsTab;
 
+  /// No description provided for @constructorsTable.
+  ///
+  /// In en, this message translates to:
+  /// **'Constructors Standings'**
+  String get constructorsTable;
+
   /// No description provided for @constructorsComingSoon.
   ///
   /// In en, this message translates to:

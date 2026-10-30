@@ -9,8 +9,8 @@ class ConstructorRepository implements IConstructorRepository {
   const ConstructorRepository(this._dataSource);
 
   @override
-  Future<List<ConstructorModel>> getConstructors({String? query}) async {
-    final standings = await _dataSource.getConstructorStandings();
+  Future<List<ConstructorModel>> getConstructors({String? query, String? season}) async {
+    final standings = await _dataSource.getConstructorStandings(season: season);
     final constructors = standings.toDomainList();
 
     if (query == null || query.trim().isEmpty) {
@@ -20,8 +20,8 @@ class ConstructorRepository implements IConstructorRepository {
     final q = query.trim().toLowerCase();
     return constructors
         .where((c) =>
-    c.name.toLowerCase().contains(q) ||
-        c.nationality.toLowerCase().contains(q))
+            c.name.toLowerCase().contains(q) ||
+            c.nationality.toLowerCase().contains(q))
         .toList();
   }
 }

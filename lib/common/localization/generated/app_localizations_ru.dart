@@ -42,6 +42,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get constructorsTab => 'Команды';
 
   @override
+  String get constructorsTable => 'Таблица команд';
+
+  @override
   String get constructorsComingSoon => 'Кубок конструкторов скоро появится';
 
   @override

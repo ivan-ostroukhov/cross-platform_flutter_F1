@@ -11,6 +11,7 @@
   "retry": "Повторить",
   "driversTab": "Пилоты",
   "constructorsTab": "Команды",
+  "constructorsTable": "Таблица команд",
   "constructorsComingSoon": "Кубок конструкторов скоро появится",
   "scheduleTab": "Календарь",
   "roundPrefix": "Этап",
