@@ -15,7 +15,6 @@ final appRouter = GoRouter(
         return ScaffoldWithNavBar(navigationShell: navigationShell);
       },
       branches: [
-        // Ветка 0: Главная
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -24,8 +23,6 @@ final appRouter = GoRouter(
             ),
           ],
         ),
-
-        // Ветка 1: Гонщики
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -43,8 +40,6 @@ final appRouter = GoRouter(
             ),
           ],
         ),
-
-        // Ветка 2: Конструкторы
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -62,8 +57,6 @@ final appRouter = GoRouter(
             ),
           ],
         ),
-
-        // Ветка 3: Расписание
         StatefulShellBranch(
           routes: [
             GoRoute(

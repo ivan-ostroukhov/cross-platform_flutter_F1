@@ -5,7 +5,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../common/utils/f1_colors.dart';
-import '../../../driver/presentation/widgets/round_points_chart.dart';
 import '../../../driver/presentation/widgets/driver_hero_image.dart';
 import '../../data/home_repository.dart';
 import '../../domain/home_news_model.dart';
@@ -80,9 +79,8 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Section 1: Auto-scrolling Hero Carousel
             SizedBox(
-              height: 380,
+              height: 360,
               child: Stack(
                 children: [
                   PageView(
@@ -133,9 +131,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
 
-                  // Carousel Page Indicator dots
                   Positioned(
-                    bottom: 12,
+                    bottom: 8,
                     left: 0,
                     right: 0,
                     child: Row(
@@ -159,46 +156,30 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
-            // Section 2: Season Progress Widget ("Пройденные этапы сезона") - Pure Black Background
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  // Circular Progress Gauge
                   SizedBox(
-                    width: 130,
-                    height: 130,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        CustomPaint(
-                          size: const Size(130, 130),
-                          painter: _GaugePainter(percent: 0.78),
-                        ),
-                        const Text(
-                          '78%',
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
+                    width: 135,
+                    height: 135,
+                    child: CustomPaint(
+                      size: const Size(135, 135),
+                      painter: _GaugePainter(percent: 0.78),
                     ),
                   ),
-                  const SizedBox(width: 24),
+                  const SizedBox(width: 20),
 
-                  // Stats Breakdown
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildProgressStat('18/23', 'Гран-при завершено'),
-                        const Divider(color: Colors.white12, height: 20),
+                        const Divider(color: Colors.white12, height: 16),
                         _buildProgressStat('5483.0 КМ', 'Пройдено'),
-                        const Divider(color: Colors.white12, height: 20),
+                        const Divider(color: Colors.white12, height: 16),
                         _buildProgressStat('1 082', 'Пройдено кругов'),
                       ],
                     ),
@@ -207,9 +188,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-            const SizedBox(height: 32),
+            const SizedBox(height: 28),
 
-            // Section 3: News Feed ("Срочные новости")
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
@@ -245,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 12),
 
             SizedBox(
-              height: 220,
+              height: 210,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 physics: const BouncingScrollPhysics(),
@@ -258,7 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: GestureDetector(
                       onTap: () => _openNewsUrl(news.url),
                       child: Container(
-                        width: 290,
+                        width: 280,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(22),
                           border: Border.all(
@@ -366,9 +346,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-            const SizedBox(height: 32),
+            const SizedBox(height: 28),
 
-            // Section 4: Brief Summary of Future Stage ("Краткая сводка будущего этапа")
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
@@ -385,19 +364,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 16),
 
                   _buildWhiteStagePill('71', 'Количество кругов', const Color(0xFFFFD600), Icons.repeat_rounded),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   _buildWhiteStagePill('356.9 км/ч', 'Максимальная скорость', const Color(0xFF00E676), Icons.speed_rounded),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   _buildWhiteStagePill('17', 'Количество поворотов', const Color(0xFF2979FF), Icons.alt_route_rounded),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   _buildWhiteStagePill('2.67 м', 'Перепад высот', const Color(0xFFFF3D00), Icons.height_rounded),
                 ],
               ),
             ),
 
-            const SizedBox(height: 32),
+            const SizedBox(height: 28),
 
-            // Section 5: Record Stats ("Самые быстрые круги, пит-стопы, команды") - Pure Black Background (Screenshot 5 Style)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
@@ -408,25 +386,25 @@ class _HomeScreenState extends State<HomeScreen> {
                     '04 ПОБЕДЫ',
                     'Red Bull',
                   ),
-                  Divider(color: Colors.white.withValues(alpha: 0.1), height: 32),
+                  Divider(color: Colors.white.withValues(alpha: 0.1), height: 28),
                   _buildRecordTile(
                     'Самые успешные пилоты',
                     '04 ПОБЕДЫ',
                     'Max Verstappen',
                   ),
-                  Divider(color: Colors.white.withValues(alpha: 0.1), height: 32),
+                  Divider(color: Colors.white.withValues(alpha: 0.1), height: 28),
                   _buildRecordTile(
                     'Рекорд круга гонки',
                     '1:14.774',
                     'Valtteri Bottas',
                   ),
-                  Divider(color: Colors.white.withValues(alpha: 0.1), height: 32),
+                  Divider(color: Colors.white.withValues(alpha: 0.1), height: 28),
                   _buildRecordTile(
                     'Самый быстрый пит-стоп сезона',
                     '1.80 с',
                     'McLaren (2023 Qatar GP)',
                   ),
-                  Divider(color: Colors.white.withValues(alpha: 0.1), height: 32),
+                  Divider(color: Colors.white.withValues(alpha: 0.1), height: 28),
                   _buildRecordTile(
                     'Самый быстрый круг сезона',
                     '1:11.890',
@@ -443,7 +421,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Slide Builders
   Widget _buildDriverSlide({
     required String driverId,
     required String bgText,
@@ -483,7 +460,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Text(
             bgText,
             style: TextStyle(
-              fontSize: 120,
+              fontSize: 110,
               fontWeight: FontWeight.w900,
               color: teamColor.withValues(alpha: 0.15),
               height: 0.9,
@@ -493,84 +470,81 @@ class _HomeScreenState extends State<HomeScreen> {
 
         Positioned(
           right: -10,
-          top: 20,
+          top: 10,
           bottom: 0,
-          width: 240,
+          width: 230,
           child: DriverHeroImage(
             driverId: driverId,
             alignment: Alignment.topRight,
           ),
         ),
 
-        SafeArea(
-          bottom: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                SizedBox(
-                  width: 220,
-                  height: 40,
-                  child: RoundPointsChart(
-                    roundPoints: chartPoints,
-                    accentColor: teamColor,
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              SizedBox(
+                width: 180,
+                height: 32,
+                child: _MiniPointsChart(
+                  roundPoints: chartPoints,
+                  accentColor: teamColor,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  const Icon(Icons.bar_chart, size: 15, color: Colors.blueAccent),
+                  const SizedBox(width: 4),
+                  Text(
+                    '$pos поз',
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    const Icon(Icons.bar_chart, size: 16, color: Colors.blueAccent),
-                    const SizedBox(width: 4),
-                    Text(
-                      '$pos поз',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                  const SizedBox(width: 12),
+                  const Icon(Icons.stars, size: 15, color: Colors.blueAccent),
+                  const SizedBox(width: 4),
+                  Text(
+                    '$wins Победы',
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
-                    const SizedBox(width: 14),
-                    const Icon(Icons.stars, size: 16, color: Colors.blueAccent),
-                    const SizedBox(width: 4),
-                    Text(
-                      '$wins Победы',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text(
+                    pts,
+                    style: const TextStyle(
+                      fontSize: 44,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      letterSpacing: -1,
                     ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: [
-                    Text(
-                      pts,
-                      style: const TextStyle(
-                        fontSize: 48,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                        letterSpacing: -1,
-                      ),
+                  ),
+                  const SizedBox(width: 6),
+                  const Text(
+                    'блв',
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.white70,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'блв',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white70,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ],
@@ -612,7 +586,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Text(
             bgText,
             style: TextStyle(
-              fontSize: 110,
+              fontSize: 100,
               fontWeight: FontWeight.w900,
               color: teamColor.withValues(alpha: 0.15),
               height: 0.9,
@@ -622,81 +596,78 @@ class _HomeScreenState extends State<HomeScreen> {
 
         Positioned(
           right: -10,
-          top: 30,
+          top: 20,
           bottom: 0,
-          width: 240,
+          width: 230,
           child: Image.asset(
             'assets/images/red_bull.png',
             fit: BoxFit.contain,
             alignment: Alignment.topRight,
             errorBuilder: (_, __, ___) => const Icon(
               Icons.sports_motorsports,
-              size: 140,
+              size: 130,
               color: Colors.white12,
             ),
           ),
         ),
 
-        SafeArea(
-          bottom: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.bar_chart, size: 16, color: Colors.blueAccent),
-                    const SizedBox(width: 4),
-                    Text(
-                      '$pos поз',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.bar_chart, size: 15, color: Colors.blueAccent),
+                  const SizedBox(width: 4),
+                  Text(
+                    '$pos поз',
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
-                    const SizedBox(width: 14),
-                    const Icon(Icons.stars, size: 16, color: Colors.blueAccent),
-                    const SizedBox(width: 4),
-                    Text(
-                      '$wins Победы',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Icon(Icons.stars, size: 15, color: Colors.blueAccent),
+                  const SizedBox(width: 4),
+                  Text(
+                    '$wins Победы',
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: [
-                    Text(
-                      pts,
-                      style: const TextStyle(
-                        fontSize: 48,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                        letterSpacing: -1,
-                      ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text(
+                    pts,
+                    style: const TextStyle(
+                      fontSize: 44,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      letterSpacing: -1,
                     ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'блв',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white70,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  ),
+                  const SizedBox(width: 6),
+                  const Text(
+                    'блв',
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.white70,
+                      fontWeight: FontWeight.bold,
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ],
@@ -739,7 +710,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Text(
             bgText,
             style: TextStyle(
-              fontSize: 110,
+              fontSize: 100,
               fontWeight: FontWeight.w900,
               color: circuitColor.withValues(alpha: 0.2),
               height: 0.9,
@@ -749,73 +720,70 @@ class _HomeScreenState extends State<HomeScreen> {
 
         Positioned(
           right: -10,
-          top: 30,
-          width: 210,
-          height: 190,
+          top: 20,
+          width: 200,
+          height: 180,
           child: Icon(
             Icons.polyline_rounded,
-            size: 180,
+            size: 160,
             color: circuitColor.withValues(alpha: 0.9),
           ),
         ),
 
-        SafeArea(
-          bottom: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  locality,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF00E676),
-                  ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                locality,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF00E676),
                 ),
-                Text(
-                  dateRange,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
+              ),
+              Text(
+                dateRange,
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  sessionTitle,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: Colors.white70,
-                  ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                sessionTitle,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.white70,
                 ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: [
-                    Text(
-                      sessionDate,
-                      style: const TextStyle(
-                        fontSize: 42,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                        letterSpacing: -1,
-                      ),
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text(
+                    sessionDate,
+                    style: const TextStyle(
+                      fontSize: 38,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      letterSpacing: -1,
                     ),
-                  ],
-                ),
-                Text(
-                  sessionTime,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.white70,
-                    fontWeight: FontWeight.w500,
                   ),
+                ],
+              ),
+              Text(
+                sessionTime,
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: Colors.white70,
+                  fontWeight: FontWeight.w500,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ],
@@ -855,7 +823,7 @@ class _HomeScreenState extends State<HomeScreen> {
     IconData icon,
   ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -869,7 +837,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text(
                   value,
                   style: const TextStyle(
-                    fontSize: 24,
+                    fontSize: 22,
                     fontWeight: FontWeight.w900,
                     color: Colors.black,
                   ),
@@ -887,8 +855,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           Container(
-            width: 44,
-            height: 44,
+            width: 42,
+            height: 42,
             decoration: BoxDecoration(
               color: btnColor,
               borderRadius: BorderRadius.circular(16),
@@ -896,7 +864,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Icon(
               icon,
               color: Colors.black,
-              size: 24,
+              size: 22,
             ),
           ),
         ],
@@ -929,13 +897,53 @@ class _HomeScreenState extends State<HomeScreen> {
         const SizedBox(height: 2),
         Text(
           holder,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 15,
-            color: Colors.white,
+            color: Colors.white.withValues(alpha: 0.8),
             fontWeight: FontWeight.w600,
           ),
         ),
       ],
+    );
+  }
+}
+
+class _MiniPointsChart extends StatelessWidget {
+  final List<int> roundPoints;
+  final Color accentColor;
+
+  const _MiniPointsChart({
+    required this.roundPoints,
+    required this.accentColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const maxScore = 25;
+    const totalRounds = 18;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: List.generate(totalRounds, (index) {
+        final hasScore = index < roundPoints.length;
+        final score = hasScore ? roundPoints[index] : 0;
+        final barHeight = hasScore && score > 0
+            ? ((score / maxScore) * 32).clamp(4.0, 32.0)
+            : 3.0;
+
+        return Expanded(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 1.0),
+            height: barHeight,
+            decoration: BoxDecoration(
+              color: hasScore && score > 0
+                  ? accentColor
+                  : Colors.white.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+        );
+      }),
     );
   }
 }
@@ -948,63 +956,126 @@ class _GaugePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width / 2 - 12;
+    final outerRadius = size.width / 2 - 2;
 
-    // Outer tick marks
     final tickPaint = Paint()
-      ..color = Colors.white24
-      ..strokeWidth = 1.5;
+      ..color = Colors.white.withValues(alpha: 0.18)
+      ..strokeWidth = 1.0;
 
-    final activeTickPaint = Paint()
-      ..color = Colors.white60
-      ..strokeWidth = 1.5;
-
-    const totalTicks = 60;
+    const totalTicks = 72;
     for (int i = 0; i < totalTicks; i++) {
-      final angle = (i * 2 * math.pi / totalTicks) - math.pi / 2;
-      final outerOffset = Offset(
-        center.dx + (radius + 10) * math.cos(angle),
-        center.dy + (radius + 10) * math.sin(angle),
+      final angle = i * (2 * math.pi / totalTicks);
+      final pOuter = Offset(
+        center.dx + outerRadius * math.cos(angle),
+        center.dy + outerRadius * math.sin(angle),
       );
-      final innerOffset = Offset(
-        center.dx + (radius + 4) * math.cos(angle),
-        center.dy + (radius + 4) * math.sin(angle),
+      final pInner = Offset(
+        center.dx + (outerRadius - 6) * math.cos(angle),
+        center.dy + (outerRadius - 6) * math.sin(angle),
       );
-
-      final isTickActive = (i / totalTicks) <= percent;
-      canvas.drawLine(innerOffset, outerOffset, isTickActive ? activeTickPaint : tickPaint);
+      canvas.drawLine(pInner, pOuter, tickPaint);
     }
 
-    // Inner track arc
-    final trackPaint = Paint()
-      ..color = const Color(0xFF1E1E24)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 14
-      ..strokeCap = StrokeCap.round;
+    final arcRadius = outerRadius - 16;
+    const strokeWidth = 16.0;
+    const startAngle = math.pi * 0.72;
+    const totalSweep = math.pi * 1.56;
 
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      math.pi * 0.7,
-      math.pi * 1.6,
-      false,
-      trackPaint,
-    );
+    final slatPaint = Paint()
+      ..color = const Color(0xFF262830)
+      ..strokeWidth = 1.8;
 
-    // Active progress arc
+    const slatCount = 48;
+    for (int i = 0; i < slatCount; i++) {
+      final slatProgress = i / slatCount;
+      if (slatProgress > percent) {
+        final angle = startAngle + (totalSweep * slatProgress);
+        final innerR = arcRadius - (strokeWidth / 2) + 2;
+        final outerR = arcRadius + (strokeWidth / 2) - 2;
+        final p1 = Offset(
+          center.dx + innerR * math.cos(angle),
+          center.dy + innerR * math.sin(angle),
+        );
+        final p2 = Offset(
+          center.dx + outerR * math.cos(angle),
+          center.dy + outerR * math.sin(angle),
+        );
+        canvas.drawLine(p1, p2, slatPaint);
+      }
+    }
+
+    final activeSweep = totalSweep * percent;
     final progressPaint = Paint()
-      ..shader = const LinearGradient(
-        colors: [Color(0xFF2979FF), Color(0xFF00E676), Color(0xFFFFD600)],
-      ).createShader(Rect.fromCircle(center: center, radius: radius))
+      ..shader = SweepGradient(
+        startAngle: startAngle,
+        endAngle: startAngle + activeSweep,
+        colors: const [
+          Color(0xFF2C4AE2),
+          Color(0xFF00C2FF),
+          Color(0xFF8CE055),
+          Color(0xFFFFD600),
+        ],
+        stops: const [0.0, 0.35, 0.7, 1.0],
+      ).createShader(Rect.fromCircle(center: center, radius: arcRadius))
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 14
+      ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round;
 
     canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      math.pi * 0.7,
-      math.pi * 1.6 * percent,
+      Rect.fromCircle(center: center, radius: arcRadius),
+      startAngle,
+      activeSweep,
       false,
       progressPaint,
+    );
+
+    final blackGapRadius = arcRadius - (strokeWidth / 2);
+    final blackGapPaint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4.0;
+
+    canvas.drawCircle(center, blackGapRadius, blackGapPaint);
+
+    final innerCircleRadius = blackGapRadius - 2;
+    final centerCirclePaint = Paint()
+      ..color = const Color(0xFF3253E8)
+      ..style = PaintingStyle.fill;
+
+    canvas.drawCircle(center, innerCircleRadius, centerCirclePaint);
+
+    final textPainter = TextPainter(
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: '${(percent * 100).round()}',
+            style: const TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              letterSpacing: -1,
+            ),
+          ),
+          const TextSpan(
+            text: '%',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+      textDirection: TextDirection.ltr,
+    );
+
+    textPainter.layout();
+    textPainter.paint(
+      canvas,
+      Offset(
+        center.dx - textPainter.width / 2,
+        center.dy - textPainter.height / 2,
+      ),
     );
   }
 
