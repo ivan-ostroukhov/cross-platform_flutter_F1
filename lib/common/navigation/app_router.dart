@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:f1_app/features/home/presentation/view/home_screen.dart';
+import 'package:f1_app/features/settings/presentation/view/settings_screen.dart';
 import 'package:f1_app/features/constructor/presentation/view/constructor_detail_screen.dart';
 import 'package:f1_app/features/constructor/presentation/view/constructor_list_screen.dart';
 import 'package:f1_app/features/driver/presentation/view/driver_detail_screen.dart';
@@ -10,6 +11,10 @@ import 'scaffold_with_nav_bar.dart';
 final appRouter = GoRouter(
   initialLocation: '/home',
   routes: [
+    GoRoute(
+      path: '/settings',
+      builder: (context, state) => const SettingsScreen(),
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return ScaffoldWithNavBar(navigationShell: navigationShell);

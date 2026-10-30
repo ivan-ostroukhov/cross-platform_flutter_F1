@@ -9,7 +9,7 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
-  String get appTitle => 'Формула 1';
+  String get appTitle => 'Apex';
 
   @override
   String get searchPlaceholder => 'Поиск пилота или команды...';
@@ -159,4 +159,58 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get resultsButton => 'Результаты';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get generalSection => 'Общее';
+
+  @override
+  String get favoritesSection => 'Избранное';
+
+  @override
+  String get notifications => 'Уведомления';
+
+  @override
+  String get appTheme => 'Тема приложения';
+
+  @override
+  String get unitSystem => 'Система единиц';
+
+  @override
+  String get timeFormat24 => '24 Часа Время';
+
+  @override
+  String get detailedResults => 'Подробные результаты';
+
+  @override
+  String get language => 'Язык';
+
+  @override
+  String get selectDriver => 'Select Driver';
+
+  @override
+  String get selectTeam => 'Выбрать команду';
+
+  @override
+  String get searchDriver => 'Поиск гонщика';
+
+  @override
+  String get searchTeam => 'Поисковая группа';
+
+  @override
+  String get cancel => 'Отмена';
+
+  @override
+  String get themeSystem => 'Система';
+
+  @override
+  String get themeDark => 'Темная';
+
+  @override
+  String get themeLight => 'Светлая';
+
+  @override
+  String get metricUnits => 'Метрика';
 }

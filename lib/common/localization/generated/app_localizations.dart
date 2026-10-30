@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Formula 1 Hub'**
+  /// **'Apex'**
   String get appTitle;
 
   /// No description provided for @searchPlaceholder.
@@ -391,6 +391,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Results'**
   String get resultsButton;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTitle;
+
+  /// No description provided for @generalSection.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get generalSection;
+
+  /// No description provided for @favoritesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get favoritesSection;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @appTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'App Theme'**
+  String get appTheme;
+
+  /// No description provided for @unitSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit System'**
+  String get unitSystem;
+
+  /// No description provided for @timeFormat24.
+  ///
+  /// In en, this message translates to:
+  /// **'24-Hour Time'**
+  String get timeFormat24;
+
+  /// No description provided for @detailedResults.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed Results'**
+  String get detailedResults;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @selectDriver.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Driver'**
+  String get selectDriver;
+
+  /// No description provided for @selectTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Team'**
+  String get selectTeam;
+
+  /// No description provided for @searchDriver.
+  ///
+  /// In en, this message translates to:
+  /// **'Search driver'**
+  String get searchDriver;
+
+  /// No description provided for @searchTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Search group'**
+  String get searchTeam;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get themeSystem;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get themeDark;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get themeLight;
+
+  /// No description provided for @metricUnits.
+  ///
+  /// In en, this message translates to:
+  /// **'Metric'**
+  String get metricUnits;
 }
 
 class _AppLocalizationsDelegate

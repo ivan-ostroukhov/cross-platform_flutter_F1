@@ -1,10 +1,17 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../common/utils/f1_colors.dart';
+import '../../../../common/network/local_storage_service.dart';
+import '../../../driver/domain/i_driver_repository.dart';
+import '../../../driver/domain/driver_detail_model.dart';
+import '../../../constructor/domain/constructor_repository.dart';
+import '../../../constructor/domain/constructor_detail_model.dart';
 import '../../../driver/presentation/widgets/driver_hero_image.dart';
 import '../../data/home_repository.dart';
 import '../../domain/home_news_model.dart';
@@ -17,31 +24,49 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late final PageController _pageController;
   Timer? _carouselTimer;
   int _activePage = 0;
   List<HomeNewsModel> _news = [];
 
+  String _favDriver1 = 'verstappen';
+  String _favDriver2 = 'piastri';
+  String _favTeam = 'red_bull';
+
+  DriverDetailModel? _driver1Detail;
+  DriverDetailModel? _driver2Detail;
+  ConstructorDetailModel? _teamDetail;
+
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
     _startAutoScroll();
     _loadNews();
+    _loadFavoritesAndData();
   }
 
   void _startAutoScroll() {
     _carouselTimer?.cancel();
     _carouselTimer = Timer.periodic(const Duration(milliseconds: 3500), (_) {
-      if (_pageController.hasClients) {
-        final nextPage = (_activePage + 1) % 4;
-        _pageController.animateToPage(
-          nextPage,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeInOutCubic,
-        );
+      if (mounted) {
+        setState(() {
+          _activePage = (_activePage + 1) % 4;
+        });
       }
     });
+  }
+
+  void _nextSlide() {
+    setState(() {
+      _activePage = (_activePage + 1) % 4;
+    });
+    _startAutoScroll();
+  }
+
+  void _previousSlide() {
+    setState(() {
+      _activePage = (_activePage - 1 + 4) % 4;
+    });
+    _startAutoScroll();
   }
 
   Future<void> _loadNews() async {
@@ -54,10 +79,86 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _loadFavoritesAndData() async {
+    final d1 = LocalStorageService.getString('fav_driver_1') ?? 'verstappen';
+    final d2 = LocalStorageService.getString('fav_driver_2') ?? 'piastri';
+    final tm = LocalStorageService.getString('fav_team') ?? 'red_bull';
+
+    setState(() {
+      _favDriver1 = d1;
+      _favDriver2 = d2;
+      _favTeam = tm;
+    });
+
+    try {
+      final driverRepo = context.read<IDriverRepository>();
+      final teamRepo = context.read<IConstructorRepository>();
+
+      final results = await Future.wait([
+        driverRepo.getDriverDetails(d1).catchError((_) => _fallbackDriverDetail(d1)),
+        driverRepo.getDriverDetails(d2).catchError((_) => _fallbackDriverDetail(d2)),
+        teamRepo.getConstructorDetails(tm).catchError((_) => _fallbackTeamDetail(tm)),
+      ]);
+
+      if (mounted) {
+        setState(() {
+          _driver1Detail = results[0] as DriverDetailModel;
+          _driver2Detail = results[1] as DriverDetailModel;
+          _teamDetail = results[2] as ConstructorDetailModel;
+        });
+      }
+    } catch (_) {}
+  }
+
+  DriverDetailModel _fallbackDriverDetail(String id) {
+    return DriverDetailModel(
+      id: id,
+      firstName: id.toUpperCase(),
+      lastName: '',
+      code: id.length >= 3 ? id.substring(0, 3).toUpperCase() : id.toUpperCase(),
+      permanentNumber: '1',
+      teamName: 'F1 Team',
+      position: '01',
+      points: '100',
+      wins: 1,
+      podiums: 3,
+      poles: 1,
+      dnfs: 0,
+      dateOfBirth: '—',
+      nationality: '—',
+      firstRace: '—',
+      firstWin: '—',
+      worldChampionships: 0,
+      roundPoints: const [25, 18, 15, 25, 18],
+    );
+  }
+
+  ConstructorDetailModel _fallbackTeamDetail(String id) {
+    return ConstructorDetailModel(
+      id: id,
+      name: id.toUpperCase().replaceAll('_', ' '),
+      chassis: 'F1 2026',
+      engine: 'F1 Engine',
+      teamPrincipal: 'Principal',
+      firstRace: '—',
+      constructorsTitles: 0,
+      driversTitles: 0,
+      baseLocation: 'Base',
+      position: '01',
+      points: '200',
+      wins: 2,
+      podiums: 5,
+      poles: 2,
+      dnfs: 0,
+      season: '2026',
+      carAssetPath: 'assets/images/$id.png',
+      drivers: const [],
+    );
+  }
+
   @override
   void dispose() {
     _carouselTimer?.cancel();
-    _pageController.dispose();
     super.dispose();
   }
 
@@ -70,65 +171,131 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (_) {}
   }
 
+  Widget _getSlideWidget(int index) {
+    final d1 = _driver1Detail;
+    final d2 = _driver2Detail;
+    final tm = _teamDetail;
+
+    switch (index) {
+      case 0:
+        return _buildDriverSlide(
+          driverId: _favDriver1,
+          bgText: d1?.firstName.isNotEmpty == true ? d1!.firstName.toLowerCase() : _favDriver1,
+          firstName: d1?.firstName ?? 'Max',
+          lastName: d1?.lastName ?? 'Verstappen',
+          teamName: d1?.teamName.isNotEmpty == true ? d1!.teamName : 'Red Bull Racing',
+          pos: d1?.position != null && d1!.position != '0' ? d1.position.padLeft(2, '0') : '04',
+          wins: d1?.wins != null ? d1!.wins.toString().padLeft(2, '0') : '02',
+          pts: d1?.points ?? '236',
+          chartPoints: d1?.roundPoints != null && d1!.roundPoints.isNotEmpty
+              ? d1.roundPoints.map((p) => p ?? 0).toList()
+              : const [12, 18, 25, 15, 25, 18, 25, 12, 18, 25, 15, 25, 18],
+        );
+      case 1:
+        return _buildDriverSlide(
+          driverId: _favDriver2,
+          bgText: d2?.firstName.isNotEmpty == true ? d2!.firstName.toLowerCase() : _favDriver2,
+          firstName: d2?.firstName ?? 'Oscar',
+          lastName: d2?.lastName ?? 'Piastri',
+          teamName: d2?.teamName.isNotEmpty == true ? d2!.teamName : 'McLaren',
+          pos: d2?.position != null && d2!.position != '0' ? d2.position.padLeft(2, '0') : '07',
+          wins: d2?.wins != null ? d2!.wins.toString().padLeft(2, '0') : '00',
+          pts: d2?.points ?? '144',
+          chartPoints: d2?.roundPoints != null && d2!.roundPoints.isNotEmpty
+              ? d2.roundPoints.map((p) => p ?? 0).toList()
+              : const [10, 12, 15, 18, 12, 25, 10, 15, 12, 15],
+        );
+      case 2:
+        return _buildTeamSlide(
+          teamName: tm?.name.isNotEmpty == true ? tm!.name : 'Red Bull Racing',
+          bgText: tm?.name.isNotEmpty == true ? tm!.name.toLowerCase() : _favTeam,
+          pos: tm?.position != null && tm!.position != '0' ? tm.position.padLeft(2, '0') : '03',
+          wins: tm?.wins != null ? tm!.wins.toString().padLeft(2, '0') : '02',
+          pts: tm?.points ?? '355',
+          carAssetPath: tm?.carAssetPath ?? 'assets/images/$_favTeam.png',
+        );
+      case 3:
+      default:
+        return _buildRaceSlide(
+          bgText: 'mexico',
+          locality: 'Mexico City',
+          dateRange: '31 Окт. - 02 Нояб.',
+          sessionTitle: 'Practice 1',
+          sessionDate: '31 СБ',
+          sessionTime: '00:30 - 01:30',
+        );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
+        slivers: [
+          SliverToBoxAdapter(
+            child: SizedBox(
               height: 360,
               child: Stack(
+                clipBehavior: Clip.none,
                 children: [
-                  PageView(
-                    controller: _pageController,
-                    onPageChanged: (idx) {
-                      setState(() {
-                        _activePage = idx;
-                      });
-                    },
-                    children: [
-                      _buildDriverSlide(
-                        driverId: 'verstappen',
-                        bgText: 'max',
-                        firstName: 'Max',
-                        lastName: 'Verstappen',
-                        teamName: 'Red Bull Racing',
-                        pos: '04',
-                        wins: '02',
-                        pts: '236',
-                        chartPoints: const [12, 18, 25, 15, 25, 18, 25, 12, 18, 25, 15, 25, 18],
+                  Positioned.fill(
+                    child: GestureDetector(
+                      onHorizontalDragEnd: (details) {
+                        if (details.primaryVelocity != null) {
+                          if (details.primaryVelocity! < -100) {
+                            _nextSlide();
+                          } else if (details.primaryVelocity! > 100) {
+                            _previousSlide();
+                          }
+                        }
+                      },
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 700),
+                        switchInCurve: Curves.easeInOut,
+                        switchOutCurve: Curves.easeInOut,
+                        transitionBuilder: (Widget child, Animation<double> animation) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: child,
+                          );
+                        },
+                        child: KeyedSubtree(
+                          key: ValueKey<int>(_activePage),
+                          child: _getSlideWidget(_activePage),
+                        ),
                       ),
-                      _buildDriverSlide(
-                        driverId: 'piastri',
-                        bgText: 'oscar',
-                        firstName: 'Oscar',
-                        lastName: 'Piastri',
-                        teamName: 'McLaren',
-                        pos: '07',
-                        wins: '0',
-                        pts: '144',
-                        chartPoints: const [10, 12, 15, 18, 12, 25, 10, 15, 12, 15],
+                    ),
+                  ),
+
+                  Positioned(
+                    top: MediaQuery.of(context).padding.top + 8,
+                    right: 16,
+                    child: GestureDetector(
+                      onTap: () async {
+                        await context.push('/settings');
+                        _loadFavoritesAndData();
+                      },
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: const Color(0x99181920),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.2),
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.tune_outlined,
+                          color: Colors.white,
+                          size: 20,
+                        ),
                       ),
-                      _buildTeamSlide(
-                        teamName: 'Red Bull Racing',
-                        bgText: 'red bull',
-                        pos: '03',
-                        wins: '02',
-                        pts: '355',
-                      ),
-                      _buildRaceSlide(
-                        bgText: 'mexico',
-                        locality: 'Mexico City',
-                        dateRange: '31 Окт. - 02 Нояб.',
-                        sessionTitle: 'Practice 1',
-                        sessionDate: '31 СБ',
-                        sessionTime: '00:30 - 01:30',
-                      ),
-                    ],
+                    ),
                   ),
 
                   Positioned(
@@ -139,14 +306,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(4, (i) {
                         final isActive = i == _activePage;
-                        return AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          width: isActive ? 24 : 6,
-                          height: 6,
-                          decoration: BoxDecoration(
-                            color: isActive ? Colors.white : Colors.white30,
-                            borderRadius: BorderRadius.circular(3),
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() => _activePage = i);
+                            _startAutoScroll();
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            margin: const EdgeInsets.symmetric(horizontal: 4),
+                            width: isActive ? 24 : 6,
+                            height: 6,
+                            decoration: BoxDecoration(
+                              color: isActive ? Colors.white : Colors.white30,
+                              borderRadius: BorderRadius.circular(3),
+                            ),
                           ),
                         );
                       }),
@@ -155,268 +328,275 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
+          ),
 
-            const SizedBox(height: 20),
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 135,
-                    height: 135,
-                    child: CustomPaint(
-                      size: const Size(135, 135),
-                      painter: _GaugePainter(percent: 0.78),
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildProgressStat('18/23', 'Гран-при завершено'),
-                        const Divider(color: Colors.white12, height: 16),
-                        _buildProgressStat('5483.0 КМ', 'Пройдено'),
-                        const Divider(color: Colors.white12, height: 16),
-                        _buildProgressStat('1 082', 'Пройдено кругов'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 28),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Row(
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
                     children: [
-                      Icon(Icons.bolt, color: Colors.white, size: 22),
-                      SizedBox(width: 6),
-                      Text(
-                        'Срочные новости',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                      SizedBox(
+                        width: 135,
+                        height: 135,
+                        child: CustomPaint(
+                          size: const Size(135, 135),
+                          painter: _GaugePainter(percent: 0.78),
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildProgressStat('18/23', 'Гран-при завершено'),
+                            const Divider(color: Colors.white12, height: 16),
+                            _buildProgressStat('5483.0 КМ', 'Пройдено'),
+                            const Divider(color: Colors.white12, height: 16),
+                            _buildProgressStat('1 082', 'Пройдено кругов'),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                  TextButton(
-                    onPressed: () => _openNewsUrl('https://www.formula1.com/en/latest/all.html'),
-                    child: const Text(
-                      'Посмотреть все >',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
+                ),
 
-            SizedBox(
-              height: 210,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: _news.length,
-                itemBuilder: (context, index) {
-                  final news = _news[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 14),
-                    child: GestureDetector(
-                      onTap: () => _openNewsUrl(news.url),
-                      child: Container(
-                        width: 280,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(22),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.12),
+                const SizedBox(height: 28),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Row(
+                        children: [
+                          Icon(Icons.bolt, color: Colors.white, size: 22),
+                          SizedBox(width: 6),
+                          Text(
+                            'Срочные новости',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                      TextButton(
+                        onPressed: () => _openNewsUrl('https://www.formula1.com/en/latest/all.html'),
+                        child: const Text(
+                          'Посмотреть все >',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 13,
                           ),
                         ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(22),
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              CachedNetworkImage(
-                                imageUrl: news.imageUrl,
-                                fit: BoxFit.cover,
-                                placeholder: (_, __) => Container(
-                                  color: const Color(0xFF1C1C1E),
-                                ),
-                                errorWidget: (_, __, ___) => Container(
-                                  decoration: const BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [Color(0xFF2C2D35), Color(0xFF141518)],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    ),
-                                  ),
-                                  child: const Center(
-                                    child: Icon(
-                                      Icons.newspaper_rounded,
-                                      size: 48,
-                                      color: Colors.white24,
-                                    ),
-                                  ),
-                                ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                SizedBox(
+                  height: 210,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: _news.length,
+                    itemBuilder: (context, index) {
+                      final news = _news[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 14),
+                        child: GestureDetector(
+                          onTap: () => _openNewsUrl(news.url),
+                          child: Container(
+                            width: 280,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(22),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.12),
                               ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      Colors.black.withValues(alpha: 0.25),
-                                      Colors.black.withValues(alpha: 0.88),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      news.title,
-                                      maxLines: 3,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                        height: 1.25,
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(22),
+                              child: Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  CachedNetworkImage(
+                                    imageUrl: news.imageUrl,
+                                    fit: BoxFit.cover,
+                                    placeholder: (_, __) => Container(
+                                      color: const Color(0xFF1C1C1E),
+                                    ),
+                                    errorWidget: (_, __, ___) => Container(
+                                      decoration: const BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [Color(0xFF2C2D35), Color(0xFF141518)],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                        ),
+                                      ),
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.newspaper_rounded,
+                                          size: 48,
+                                          color: Colors.white24,
+                                        ),
                                       ),
                                     ),
-                                    const SizedBox(height: 12),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  ),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [
+                                          Colors.black.withValues(alpha: 0.25),
+                                          Colors.black.withValues(alpha: 0.88),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
+                                        Text(
+                                          news.title,
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                            height: 1.25,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 12),
                                         Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
-                                            const Icon(
-                                              Icons.link,
-                                              size: 14,
-                                              color: Colors.white70,
+                                            Row(
+                                              children: [
+                                                const Icon(
+                                                  Icons.link,
+                                                  size: 14,
+                                                  color: Colors.white70,
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  news.source,
+                                                  style: const TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.white70,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                            const SizedBox(width: 4),
                                             Text(
-                                              news.source,
+                                              news.timeAgo,
                                               style: const TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.white70,
-                                                fontWeight: FontWeight.w500,
+                                                fontSize: 11,
+                                                color: Colors.white38,
                                               ),
                                             ),
                                           ],
                                         ),
-                                        Text(
-                                          news.timeAgo,
-                                          style: const TextStyle(
-                                            fontSize: 11,
-                                            color: Colors.white38,
-                                          ),
-                                        ),
                                       ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
                         ),
+                      );
+                    },
+                  ),
+                ),
+
+                const SizedBox(height: 28),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'R19 Гран-при Мехико',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ),
+                      const SizedBox(height: 16),
+
+                      _buildWhiteStagePill('71', 'Количество кругов', const Color(0xFFFFD600), Icons.repeat_rounded),
+                      const SizedBox(height: 10),
+                      _buildWhiteStagePill('356.9 км/ч', 'Максимальная скорость', const Color(0xFF00E676), Icons.speed_rounded),
+                      const SizedBox(height: 10),
+                      _buildWhiteStagePill('17', 'Количество поворотов', const Color(0xFF2979FF), Icons.alt_route_rounded),
+                      const SizedBox(height: 10),
+                      _buildWhiteStagePill('2.67 м', 'Перепад высот', const Color(0xFFFF3D00), Icons.height_rounded),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 28),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildRecordTile(
+                        'Самая успешная команда-конструктор',
+                        '04 ПОБЕДЫ',
+                        'Red Bull',
+                      ),
+                      Divider(color: Colors.white.withValues(alpha: 0.1), height: 28),
+                      _buildRecordTile(
+                        'Самые успешные пилоты',
+                        '04 ПОБЕДЫ',
+                        'Max Verstappen',
+                      ),
+                      Divider(color: Colors.white.withValues(alpha: 0.1), height: 28),
+                      _buildRecordTile(
+                        'Рекорд круга гонки',
+                        '1:14.774',
+                        'Valtteri Bottas',
+                      ),
+                      Divider(color: Colors.white.withValues(alpha: 0.1), height: 28),
+                      _buildRecordTile(
+                        'Самый быстрый пит-стоп сезона',
+                        '1.80 с',
+                        'McLaren (2023 Qatar GP)',
+                      ),
+                      Divider(color: Colors.white.withValues(alpha: 0.1), height: 28),
+                      _buildRecordTile(
+                        'Самый быстрый круг сезона',
+                        '1:11.890',
+                        'Lando Norris',
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 40),
+              ],
             ),
-
-            const SizedBox(height: 28),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'R19 Гран-при Мехико',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  _buildWhiteStagePill('71', 'Количество кругов', const Color(0xFFFFD600), Icons.repeat_rounded),
-                  const SizedBox(height: 10),
-                  _buildWhiteStagePill('356.9 км/ч', 'Максимальная скорость', const Color(0xFF00E676), Icons.speed_rounded),
-                  const SizedBox(height: 10),
-                  _buildWhiteStagePill('17', 'Количество поворотов', const Color(0xFF2979FF), Icons.alt_route_rounded),
-                  const SizedBox(height: 10),
-                  _buildWhiteStagePill('2.67 м', 'Перепад высот', const Color(0xFFFF3D00), Icons.height_rounded),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 28),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildRecordTile(
-                    'Самая успешная команда-конструктор',
-                    '04 ПОБЕДЫ',
-                    'Red Bull',
-                  ),
-                  Divider(color: Colors.white.withValues(alpha: 0.1), height: 28),
-                  _buildRecordTile(
-                    'Самые успешные пилоты',
-                    '04 ПОБЕДЫ',
-                    'Max Verstappen',
-                  ),
-                  Divider(color: Colors.white.withValues(alpha: 0.1), height: 28),
-                  _buildRecordTile(
-                    'Рекорд круга гонки',
-                    '1:14.774',
-                    'Valtteri Bottas',
-                  ),
-                  Divider(color: Colors.white.withValues(alpha: 0.1), height: 28),
-                  _buildRecordTile(
-                    'Самый быстрый пит-стоп сезона',
-                    '1.80 с',
-                    'McLaren (2023 Qatar GP)',
-                  ),
-                  Divider(color: Colors.white.withValues(alpha: 0.1), height: 28),
-                  _buildRecordTile(
-                    'Самый быстрый круг сезона',
-                    '1:11.890',
-                    'Lando Norris',
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 40),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -437,7 +617,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        Positioned.fill(
+        Positioned(
+          top: -400,
+          left: 0,
+          right: 0,
+          bottom: 0,
           child: Container(
             decoration: BoxDecoration(
               gradient: RadialGradient(
@@ -580,13 +764,18 @@ class _HomeScreenState extends State<HomeScreen> {
     required String pos,
     required String wins,
     required String pts,
+    required String carAssetPath,
   }) {
     final teamColor = F1Colors.getTeamColor(teamName);
 
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        Positioned.fill(
+        Positioned(
+          top: -400,
+          left: 0,
+          right: 0,
+          bottom: 0,
           child: Container(
             decoration: BoxDecoration(
               gradient: RadialGradient(
@@ -623,7 +812,7 @@ class _HomeScreenState extends State<HomeScreen> {
           bottom: 0,
           width: 230,
           child: Image.asset(
-            'assets/images/red_bull.png',
+            carAssetPath,
             fit: BoxFit.contain,
             alignment: Alignment.topRight,
             errorBuilder: (_, __, ___) => const Icon(
@@ -733,7 +922,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        Positioned.fill(
+        Positioned(
+          top: -400,
+          left: 0,
+          right: 0,
+          bottom: 0,
           child: Container(
             decoration: BoxDecoration(
               gradient: RadialGradient(

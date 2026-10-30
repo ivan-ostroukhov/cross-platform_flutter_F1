@@ -39,7 +39,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
 
   Win32Window::Point origin(originX, originY);
   Win32Window::Size size(windowWidth, windowHeight);
-  if (!window.Create(L"f1_app", origin, size)) {
+  if (!window.Create(L"Apex", origin, size)) {
     return EXIT_FAILURE;
   }
   window.SetQuitOnClose(true);

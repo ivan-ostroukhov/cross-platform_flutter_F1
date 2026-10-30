@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appTitle": "Formula 1 Hub",
+  "appTitle": "Apex",
   "searchPlaceholder": "Search driver or team...",
   "points": "PTS",
   "teammate": "Teammate",
@@ -61,7 +61,26 @@
   "hoursShort": "Hours",
   "minutesShort": "Mins",
   "scheduleButton": "Schedule",
-  "resultsButton": "Results"
+  "resultsButton": "Results",
+
+  "settingsTitle": "Settings",
+  "generalSection": "General",
+  "favoritesSection": "Favorites",
+  "notifications": "Notifications",
+  "appTheme": "App Theme",
+  "unitSystem": "Unit System",
+  "timeFormat24": "24-Hour Time",
+  "detailedResults": "Detailed Results",
+  "language": "Language",
+  "selectDriver": "Select Driver",
+  "selectTeam": "Select Team",
+  "searchDriver": "Search driver",
+  "searchTeam": "Search group",
+  "cancel": "Cancel",
+  "themeSystem": "System",
+  "themeDark": "Dark",
+  "themeLight": "Light",
+  "metricUnits": "Metric"
 }
 
 

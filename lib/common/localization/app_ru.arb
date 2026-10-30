@@ -1,6 +1,6 @@
 {
   "@@locale": "ru",
-  "appTitle": "Формула 1",
+  "appTitle": "Apex",
   "searchPlaceholder": "Поиск пилота или команды...",
   "points": "Очков",
   "teammate": "Напарник",
@@ -61,5 +61,24 @@
   "hoursShort": "Часы",
   "minutesShort": "Минуты",
   "scheduleButton": "Расписание",
-  "resultsButton": "Результаты"
+  "resultsButton": "Результаты",
+
+  "settingsTitle": "Settings",
+  "generalSection": "Общее",
+  "favoritesSection": "Избранное",
+  "notifications": "Уведомления",
+  "appTheme": "Тема приложения",
+  "unitSystem": "Система единиц",
+  "timeFormat24": "24 Часа Время",
+  "detailedResults": "Подробные результаты",
+  "language": "Язык",
+  "selectDriver": "Select Driver",
+  "selectTeam": "Выбрать команду",
+  "searchDriver": "Поиск гонщика",
+  "searchTeam": "Поисковая группа",
+  "cancel": "Отмена",
+  "themeSystem": "Система",
+  "themeDark": "Темная",
+  "themeLight": "Светлая",
+  "metricUnits": "Метрика"
 }
