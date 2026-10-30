@@ -17,17 +17,23 @@ class DriverApi {
     return ErgastStandingsResponseDto.fromJson(response.data!);
   }
 
-  Future<ErgastStandingsResponseDto> getDriverStandingById(String driverId) async {
+  Future<ErgastStandingsResponseDto> getDriverStandingById(
+    String driverId, {
+    String season = 'current',
+  }) async {
     final response = await _dio.get<Map<String, dynamic>>(
-      '/current/drivers/$driverId/driverStandings.json',
+      '/$season/drivers/$driverId/driverStandings.json',
     );
     return ErgastStandingsResponseDto.fromJson(response.data!);
   }
 
-  Future<Map<String, dynamic>> getDriverSeasonResults(String driverId) async {
+  Future<Map<String, dynamic>> getDriverSeasonResults(
+    String driverId, {
+    String season = 'current',
+  }) async {
     try {
       final response = await _dio.get<Map<String, dynamic>>(
-        '/current/drivers/$driverId/results.json',
+        '/$season/drivers/$driverId/results.json',
         queryParameters: {'limit': 30},
       );
       return response.data ?? <String, dynamic>{};
@@ -41,6 +47,25 @@ class DriverApi {
       } catch (_) {
         return <String, dynamic>{};
       }
+    }
+  }
+
+  Future<List<String>> getDriverSeasons(String driverId) async {
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/drivers/$driverId/seasons.json',
+        queryParameters: {'limit': 100},
+      );
+      final seasonTable = response.data?['MRData']?['SeasonTable'];
+      final seasonsList = seasonTable?['Seasons'] as List<dynamic>? ?? [];
+      final seasons = seasonsList
+          .map((s) => s['season'] as String? ?? '')
+          .where((s) => s.isNotEmpty)
+          .toList();
+      seasons.sort((a, b) => b.compareTo(a));
+      return seasons;
+    } catch (_) {
+      return [];
     }
   }
 

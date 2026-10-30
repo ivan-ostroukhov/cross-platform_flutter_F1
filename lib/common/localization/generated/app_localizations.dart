@@ -233,8 +233,20 @@ abstract class AppLocalizations {
   /// No description provided for @seasonPrefix.
   ///
   /// In en, this message translates to:
-  /// **'{year} Season'**
+  /// **'Season {year}'**
   String seasonPrefix(String year);
+
+  /// No description provided for @selectSeason.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Season'**
+  String get selectSeason;
+
+  /// No description provided for @sinceDebut.
+  ///
+  /// In en, this message translates to:
+  /// **'Since Debut ({year})'**
+  String sinceDebut(String year);
 
   /// No description provided for @driverCodeLabel.
   ///

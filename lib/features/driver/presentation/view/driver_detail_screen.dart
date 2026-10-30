@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -24,12 +25,240 @@ class DriverDetailScreen extends StatefulWidget {
 }
 
 class _DriverDetailScreenState extends State<DriverDetailScreen> {
+  final GlobalKey _seasonButtonKey = GlobalKey();
+  String _selectedSeason = '2026';
+  List<String> _seasons = [];
   late Future<DriverDetailModel> _detailFuture;
 
   @override
   void initState() {
     super.initState();
-    _detailFuture = context.read<IDriverRepository>().getDriverDetails(widget.driverId);
+    _loadData(_selectedSeason);
+    _fetchSeasons();
+  }
+
+  void _loadData(String season) {
+    setState(() {
+      _selectedSeason = season;
+      _detailFuture = context.read<IDriverRepository>().getDriverDetails(
+        widget.driverId,
+        season: season,
+      );
+    });
+  }
+
+  Future<void> _fetchSeasons() async {
+    try {
+      final seasons = await context
+          .read<IDriverRepository>()
+          .getDriverSeasons(widget.driverId);
+      if (mounted) {
+        setState(() {
+          _seasons = seasons;
+          if (_seasons.isNotEmpty &&
+              !_seasons.contains(_selectedSeason) &&
+              _selectedSeason != 'career') {
+            _selectedSeason = _seasons.first;
+            _loadData(_selectedSeason);
+          }
+        });
+      }
+    } catch (_) {}
+  }
+
+  void _showSeasonPicker() async {
+    final l10n = AppLocalizations.of(context)!;
+    final renderBox = _seasonButtonKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+
+    final buttonOffset = renderBox.localToGlobal(Offset.zero);
+    final screenSize = MediaQuery.of(context).size;
+
+    String? debutYear;
+    try {
+      final detailData = await _detailFuture;
+      if (detailData.firstRace != '—' && detailData.firstRace.isNotEmpty) {
+        final match = RegExp(r'\d{4}').firstMatch(detailData.firstRace);
+        if (match != null) {
+          debutYear = match.group(0);
+        }
+      }
+    } catch (_) {}
+
+    final debutInt = int.tryParse(debutYear ?? '') ?? 1950;
+    const currentYearInt = 2026;
+
+    List<String> availableSeasons;
+    if (_seasons.isNotEmpty) {
+      availableSeasons = _seasons
+          .where((s) => (int.tryParse(s) ?? 0) >= debutInt)
+          .take(4)
+          .toList();
+    } else {
+      final list = <String>[];
+      for (int y = currentYearInt; y >= debutInt && list.length < 4; y--) {
+        list.add(y.toString());
+      }
+      availableSeasons = list.isNotEmpty ? list : ['2026'];
+    }
+
+    final showSinceDebut = debutYear != null && debutInt < currentYearInt;
+
+    double top = buttonOffset.dy - 10;
+    double left = buttonOffset.dx - 12;
+
+    final itemCount = availableSeasons.length + (showSinceDebut ? 1 : 0);
+    final estimatedHeight = itemCount * 46.0 + 30.0;
+    if (top + estimatedHeight > screenSize.height - 30) {
+      top = screenSize.height - estimatedHeight - 30;
+    }
+    if (top < 40) top = 40;
+
+    if (!mounted) return;
+
+    final selected = await showGeneralDialog<String>(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'SeasonPicker',
+      barrierColor: Colors.black26,
+      transitionDuration: const Duration(milliseconds: 180),
+      pageBuilder: (ctx, anim1, anim2) {
+        return Stack(
+          children: [
+            Positioned(
+              top: top,
+              left: left,
+              child: Material(
+                color: Colors.transparent,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(22),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                    child: Container(
+                      width: 215,
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xCC181A22),
+                        borderRadius: BorderRadius.circular(22),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.45),
+                            blurRadius: 24,
+                            spreadRadius: 2,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          for (final season in availableSeasons) ...[
+                            InkWell(
+                              onTap: () => Navigator.of(ctx).pop(season),
+                              borderRadius: BorderRadius.circular(10),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8,
+                                  horizontal: 4,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        l10n.seasonPrefix(season),
+                                        style: TextStyle(
+                                          color: season == _selectedSeason
+                                              ? Colors.white
+                                              : Colors.white70,
+                                          fontSize: 16,
+                                          fontWeight: season == _selectedSeason
+                                              ? FontWeight.bold
+                                              : FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                    if (season == _selectedSeason)
+                                      const Icon(
+                                        Icons.check,
+                                        size: 18,
+                                        color: Colors.white,
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+
+                          if (showSinceDebut) ...[
+                            const SizedBox(height: 4),
+                            InkWell(
+                              onTap: () => Navigator.of(ctx).pop('career'),
+                              borderRadius: BorderRadius.circular(10),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8,
+                                  horizontal: 4,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        l10n.sinceDebut(debutYear!),
+                                        style: TextStyle(
+                                          color: _selectedSeason == 'career'
+                                              ? Colors.white
+                                              : Colors.white70,
+                                          fontSize: 15,
+                                          fontWeight: _selectedSeason == 'career'
+                                              ? FontWeight.bold
+                                              : FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                    if (_selectedSeason == 'career')
+                                      const Icon(
+                                        Icons.check,
+                                        size: 18,
+                                        color: Colors.white,
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+      transitionBuilder: (ctx, anim1, anim2, child) {
+        return FadeTransition(
+          opacity: anim1,
+          child: ScaleTransition(
+            scale: CurvedAnimation(
+              parent: anim1,
+              curve: Curves.easeOutCubic,
+            ),
+            alignment: Alignment.topLeft,
+            child: child,
+          ),
+        );
+      },
+    );
+
+    if (selected != null && selected != _selectedSeason) {
+      _loadData(selected);
+    }
   }
 
   @override
@@ -42,7 +271,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     if (listState is DriverListLoaded) {
       try {
         currentDriver = listState.drivers.firstWhere(
-              (d) => d.id == widget.driverId,
+          (d) => d.id == widget.driverId,
         );
       } catch (_) {
         currentDriver = listState.drivers.first;
@@ -54,15 +283,14 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     final firstName = nameParts.isNotEmpty ? nameParts.first : '';
     final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
 
-    final teamName = currentDriver?.teamName as String? ?? 'Team';
-    final teamColor = F1Colors.getTeamColor(teamName);
-    final points = currentDriver?.points?.toString() ?? '0';
+    final fallbackTeamName = currentDriver?.teamName as String? ?? 'Team';
+    final fallbackPoints = currentDriver?.points?.toString() ?? '0';
 
-    String positionNumber = '01';
+    String fallbackPositionNumber = '01';
     if (listState is DriverListLoaded && currentDriver != null) {
       final index = listState.drivers.indexOf(currentDriver);
       if (index >= 0) {
-        positionNumber = (index + 1).toString().padLeft(2, '0');
+        fallbackPositionNumber = (index + 1).toString().padLeft(2, '0');
       }
     }
 
@@ -73,6 +301,20 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
         builder: (context, snapshot) {
           final detail = snapshot.data;
           final isLoading = snapshot.connectionState == ConnectionState.waiting;
+
+          final dynamicTeamName = (detail != null && detail.teamName.isNotEmpty)
+              ? detail.teamName
+              : fallbackTeamName;
+          final displayTeamColor = F1Colors.getTeamColor(dynamicTeamName);
+
+          String displayPosition = fallbackPositionNumber;
+          if (detail != null && detail.position != '0') {
+            displayPosition = detail.position.padLeft(2, '0');
+          }
+
+          final displayPoints = (detail != null && detail.points != '0')
+              ? detail.points
+              : (isLoading ? '..' : fallbackPoints);
 
           final winsStr = isLoading
               ? '..'
@@ -94,14 +336,26 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
           final driverCode = (detail != null && detail.code.isNotEmpty)
               ? detail.code
               : (widget.driverId.length >= 3
-              ? widget.driverId.substring(0, 3).toUpperCase()
-              : widget.driverId.toUpperCase());
+                  ? widget.driverId.substring(0, 3).toUpperCase()
+                  : widget.driverId.toUpperCase());
 
           final firstRaceStr = isLoading ? 'Загрузка...' : (detail?.firstRace ?? '—');
           final firstWinStr = isLoading ? 'Загрузка...' : (detail?.firstWin ?? '—');
           final championshipsStr = isLoading ? '..' : '${detail?.worldChampionships ?? 0}';
           final dobStr = isLoading ? 'Загрузка...' : (detail?.dateOfBirth ?? '—');
           final countryStr = isLoading ? 'Загрузка...' : (detail?.nationality ?? '—');
+
+          String debutYear = '';
+          if (detail != null && detail.firstRace != '—' && detail.firstRace.isNotEmpty) {
+            final match = RegExp(r'\d{4}').firstMatch(detail.firstRace);
+            if (match != null) {
+              debutYear = match.group(0) ?? '';
+            }
+          }
+
+          final seasonText = _selectedSeason == 'career'
+              ? l10n.sinceDebut(debutYear.isNotEmpty ? debutYear : 'Debut')
+              : l10n.seasonPrefix(_selectedSeason);
 
           return SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
@@ -120,9 +374,9 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                             radius: 1.25,
                             stops: const [0.0, 0.45, 0.8, 1.0],
                             colors: [
-                              teamColor.withValues(alpha: 0.55),
-                              teamColor.withValues(alpha: 0.28),
-                              teamColor.withValues(alpha: 0.08),
+                              displayTeamColor.withValues(alpha: 0.55),
+                              displayTeamColor.withValues(alpha: 0.28),
+                              displayTeamColor.withValues(alpha: 0.08),
                               Colors.transparent,
                             ],
                           ),
@@ -192,35 +446,41 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.w700,
-                                color: teamColor,
+                                color: displayTeamColor,
                                 height: 1.2,
                               ),
                             ),
                             const SizedBox(height: 6),
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  l10n.seasonPrefix('2026'),
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.white.withValues(alpha: 0.8),
-                                    fontWeight: FontWeight.w500,
+
+                            GestureDetector(
+                              key: _seasonButtonKey,
+                              onTap: _showSeasonPicker,
+                              behavior: HitTestBehavior.opaque,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    seasonText,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.white.withValues(alpha: 0.8),
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 4),
-                                const Icon(
-                                  Icons.unfold_more,
-                                  size: 16,
-                                  color: Colors.white70,
-                                ),
-                              ],
+                                  const SizedBox(width: 4),
+                                  const Icon(
+                                    Icons.unfold_more,
+                                    size: 16,
+                                    color: Colors.white70,
+                                  ),
+                                ],
+                              ),
                             ),
                             const SizedBox(height: 18),
 
-                            _buildBigStat(positionNumber, l10n.driverPositionShort),
+                            _buildBigStat(displayPosition, l10n.driverPositionShort),
                             const SizedBox(height: 10),
-                            _buildBigStat(points, l10n.driverPointsShort),
+                            _buildBigStat(displayPoints, l10n.driverPointsShort),
                             const SizedBox(height: 16),
 
                             _buildIconStat(
@@ -258,7 +518,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                 if (chartPoints.isNotEmpty)
                   RoundPointsChart(
                     roundPoints: chartPoints,
-                    accentColor: teamColor,
+                    accentColor: displayTeamColor,
                   )
                 else
                   const Padding(
@@ -284,7 +544,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                   leading: Text(
                     driverCode.length > 2 ? driverCode.substring(0, 2) : driverCode,
                     style: TextStyle(
-                      color: teamColor,
+                      color: displayTeamColor,
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                     ),
@@ -299,7 +559,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                     color: Colors.white.withValues(alpha: 0.9),
                     size: 26,
                   ),
-                  title: teamName,
+                  title: dynamicTeamName,
                   subtitle: l10n.teamLabel,
                 ),
 

@@ -23,8 +23,15 @@
   "podiumsLabel": "Подиумы",
   "polesLabel": "Поулы",
   "dnfsLabel": "DNFs",
-  "seasonPrefix": "{year} Сезон",
+  "seasonPrefix": "Сезон {year}",
   "@seasonPrefix": {
+    "placeholders": {
+      "year": { "type": "String" }
+    }
+  },
+  "selectSeason": "Выберите сезон",
+  "sinceDebut": "С дебюта ({year})",
+  "@sinceDebut": {
     "placeholders": {
       "year": { "type": "String" }
     }

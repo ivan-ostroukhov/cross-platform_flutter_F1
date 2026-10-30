@@ -25,9 +25,9 @@ class NetworkDriverDataSource implements IDriverDataSource {
   }
 
   @override
-  Future<DriverStandingDto> getDriverById(String id) async {
+  Future<DriverStandingDto> getDriverById(String id, {String season = 'current'}) async {
     try {
-      final response = await _api.getDriverStandingById(id);
+      final response = await _api.getDriverStandingById(id, season: season);
       final lists = response.mrData.standingsTable.standingsLists;
       if (lists.isEmpty || lists.first.driverStandings.isEmpty) {
         throw const NotFoundLoadException();
@@ -39,9 +39,21 @@ class NetworkDriverDataSource implements IDriverDataSource {
   }
 
   @override
-  Future<Map<String, dynamic>> getDriverSeasonResults(String driverId) async {
+  Future<Map<String, dynamic>> getDriverSeasonResults(
+    String driverId, {
+    String season = 'current',
+  }) async {
     try {
-      return await _api.getDriverSeasonResults(driverId);
+      return await _api.getDriverSeasonResults(driverId, season: season);
+    } on DioException catch (e) {
+      throw _mapDioException(e);
+    }
+  }
+
+  @override
+  Future<List<String>> getDriverSeasons(String driverId) async {
+    try {
+      return await _api.getDriverSeasons(driverId);
     } on DioException catch (e) {
       throw _mapDioException(e);
     }

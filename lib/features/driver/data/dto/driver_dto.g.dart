@@ -34,6 +34,8 @@ StandingsListDto _$StandingsListDtoFromJson(Map<String, dynamic> json) =>
 DriverStandingDto _$DriverStandingDtoFromJson(Map<String, dynamic> json) =>
     DriverStandingDto(
       points: json['points'] as String,
+      position: json['position'] as String?,
+      wins: json['wins'] as String?,
       driver: DriverInfoDto.fromJson(json['Driver'] as Map<String, dynamic>),
       constructors: (json['Constructors'] as List<dynamic>)
           .map((e) => ConstructorDto.fromJson(e as Map<String, dynamic>))

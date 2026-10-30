@@ -76,7 +76,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String seasonPrefix(String year) {
-    return '$year Сезон';
+    return 'Сезон $year';
+  }
+
+  @override
+  String get selectSeason => 'Выберите сезон';
+
+  @override
+  String sinceDebut(String year) {
+    return 'С дебюта ($year)';
   }
 
   @override

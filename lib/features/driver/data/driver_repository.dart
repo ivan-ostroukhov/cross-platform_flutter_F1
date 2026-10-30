@@ -28,11 +28,11 @@ class DriverRepository implements IDriverRepository {
   }
 
   @override
-  Future<DriverModel?> getDriverById(String id) async {
+  Future<DriverModel?> getDriverById(String id, {String season = 'current'}) async {
     final results = await Future.wait([
       _dataSource.getDriverStandings(),
       _dataSource
-          .getDriverById(id)
+          .getDriverById(id, season: season)
           .then<DriverStandingDto?>((val) => val)
           .catchError((_) => null),
     ]);
@@ -55,10 +55,41 @@ class DriverRepository implements IDriverRepository {
   }
 
   @override
-  Future<DriverDetailModel> getDriverDetails(String driverId) async {
+  Future<List<String>> getDriverSeasons(String driverId) async {
+    final seasons = await _dataSource.getDriverSeasons(driverId);
+    if (seasons.isEmpty) {
+      return ['2026', '2025', '2024'];
+    }
+    return seasons;
+  }
+
+  @override
+  Future<DriverDetailModel> getDriverDetails(
+    String driverId, {
+    String season = '2026',
+  }) async {
     try {
-      final seasonData = await _dataSource.getDriverSeasonResults(driverId);
-      final careerData = await _dataSource.getDriverCareerMilestones(driverId);
+      final isCareer = season == 'career';
+      final querySeason = isCareer ? 'current' : season;
+
+      final seasonDataFuture = _dataSource.getDriverSeasonResults(driverId, season: querySeason);
+      final careerDataFuture = _dataSource.getDriverCareerMilestones(driverId);
+      final standingFuture = isCareer
+          ? Future.value(null)
+          : _dataSource
+              .getDriverById(driverId, season: querySeason)
+              .then<DriverStandingDto?>((val) => val)
+              .catchError((_) => null);
+
+      final results = await Future.wait([
+        seasonDataFuture,
+        careerDataFuture,
+        standingFuture,
+      ]);
+
+      final seasonData = results[0] as Map<String, dynamic>;
+      final careerData = results[1] as Map<String, dynamic>;
+      final seasonStanding = results[2] as DriverStandingDto?;
 
       final raceList =
           seasonData['MRData']?['RaceTable']?['Races'] as List<dynamic>? ?? [];
@@ -75,11 +106,14 @@ class DriverRepository implements IDriverRepository {
       String nationality = '';
       String givenName = '';
       String familyName = '';
+      String teamName = seasonStanding?.constructors.firstOrNull?.name ?? '';
+      String position = seasonStanding?.position ?? (isCareer ? '—' : '0');
+      String pointsStr = seasonStanding?.points ?? (isCareer ? '—' : '0');
 
       for (final race in raceList) {
-        final results = race['Results'] as List<dynamic>? ?? [];
-        if (results.isEmpty) continue;
-        final res = results.first as Map<String, dynamic>;
+        final resultsList = race['Results'] as List<dynamic>? ?? [];
+        if (resultsList.isEmpty) continue;
+        final res = resultsList.first as Map<String, dynamic>;
 
         final driverObj = res['Driver'] as Map<String, dynamic>? ?? {};
         code = driverObj['code'] as String? ?? code;
@@ -89,6 +123,11 @@ class DriverRepository implements IDriverRepository {
         nationality = driverObj['nationality'] as String? ?? nationality;
         givenName = driverObj['givenName'] as String? ?? givenName;
         familyName = driverObj['familyName'] as String? ?? familyName;
+
+        if (teamName.isEmpty) {
+          final constr = res['Constructor'] as Map<String, dynamic>? ?? {};
+          teamName = constr['name'] as String? ?? teamName;
+        }
 
         final pos = int.tryParse(res['position'] as String? ?? '') ?? 0;
         final grid = int.tryParse(res['grid'] as String? ?? '') ?? 0;
@@ -103,6 +142,11 @@ class DriverRepository implements IDriverRepository {
         if (!status.toLowerCase().contains('finished') && !status.startsWith('+')) {
           dnfs++;
         }
+      }
+
+      if (pointsStr == '0' && roundPoints.isNotEmpty) {
+        final sum = roundPoints.fold<int>(0, (a, b) => a + (b ?? 0));
+        if (sum > 0) pointsStr = sum.toString();
       }
 
       final firstRaceList =
@@ -137,9 +181,9 @@ class DriverRepository implements IDriverRepository {
         lastName: familyName,
         code: code.isNotEmpty ? code : (driverId.length >= 3 ? driverId.substring(0, 3).toUpperCase() : driverId.toUpperCase()),
         permanentNumber: permanentNumber,
-        teamName: '',
-        position: '0',
-        points: roundPoints.fold<int>(0, (a, b) => a + (b ?? 0)).toString(),
+        teamName: teamName,
+        position: position,
+        points: pointsStr,
         wins: wins,
         podiums: podiums,
         poles: poles,
@@ -150,6 +194,7 @@ class DriverRepository implements IDriverRepository {
         firstWin: firstWinStr,
         worldChampionships: championships,
         roundPoints: roundPoints,
+        season: season,
       );
     } catch (e) {
       return DriverDetailModel(
@@ -171,6 +216,7 @@ class DriverRepository implements IDriverRepository {
         firstWin: '—',
         worldChampionships: 0,
         roundPoints: const [],
+        season: season,
       );
     }
   }

@@ -23,8 +23,15 @@
   "podiumsLabel": "Podiums",
   "polesLabel": "Poles",
   "dnfsLabel": "DNFs",
-  "seasonPrefix": "{year} Season",
+  "seasonPrefix": "Season {year}",
   "@seasonPrefix": {
+    "placeholders": {
+      "year": { "type": "String" }
+    }
+  },
+  "selectSeason": "Select Season",
+  "sinceDebut": "Since Debut ({year})",
+  "@sinceDebut": {
     "placeholders": {
       "year": { "type": "String" }
     }

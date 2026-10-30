@@ -17,6 +17,7 @@ class DriverDetailModel {
   final String firstWin;
   final int worldChampionships;
   final List<int?> roundPoints;
+  final String season;
 
   const DriverDetailModel({
     required this.id,
@@ -37,5 +38,6 @@ class DriverDetailModel {
     required this.firstWin,
     required this.worldChampionships,
     required this.roundPoints,
+    this.season = '2026',
   });
 }
