@@ -5,6 +5,7 @@ import 'dto/driver_dto.dart';
 import 'data_sources/driver_data_source.dart';
 import 'mappers/driver_mapper.dart';
 import '../../../../common/network/load_exception.dart';
+import '../../../../common/utils/team_utils.dart';
 
 class DriverRepository implements IDriverRepository {
   final IDriverDataSource _dataSource;
@@ -181,7 +182,7 @@ class DriverRepository implements IDriverRepository {
         lastName: familyName,
         code: code.isNotEmpty ? code : (driverId.length >= 3 ? driverId.substring(0, 3).toUpperCase() : driverId.toUpperCase()),
         permanentNumber: permanentNumber,
-        teamName: teamName,
+        teamName: TeamUtils.cleanTeamName(teamName),
         position: position,
         points: pointsStr,
         wins: wins,
