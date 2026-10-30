@@ -1,0 +1,22 @@
+{
+  "podiums": {
+    "1": [{"code": "RUS", "teamName": "Mercedes", "position": 1}, {"code": "VER", "teamName": "Red Bull", "position": 2}, {"code": "NOR", "teamName": "McLaren", "position": 3}],
+    "2": [{"code": "VER", "teamName": "Red Bull", "position": 1}, {"code": "HAM", "teamName": "Mercedes", "position": 2}, {"code": "LEC", "teamName": "Ferrari", "position": 3}],
+    "3": [{"code": "ANT", "teamName": "Mercedes", "position": 1}, {"code": "PIA", "teamName": "McLaren", "position": 2}, {"code": "LEC", "teamName": "Ferrari", "position": 3}],
+    "4": [{"code": "ANT", "teamName": "Mercedes", "position": 1}, {"code": "NOR", "teamName": "McLaren", "position": 2}, {"code": "PIA", "teamName": "McLaren", "position": 3}],
+    "5": [{"code": "ANT", "teamName": "Mercedes", "position": 1}, {"code": "HAM", "teamName": "Mercedes", "position": 2}, {"code": "VER", "teamName": "Red Bull", "position": 3}],
+    "6": [{"code": "LEC", "teamName": "Ferrari", "position": 1}, {"code": "PIA", "teamName": "McLaren", "position": 2}, {"code": "SAI", "teamName": "Ferrari", "position": 3}],
+    "7": [{"code": "VER", "teamName": "Red Bull", "position": 1}, {"code": "NOR", "teamName": "McLaren", "position": 2}, {"code": "HAM", "teamName": "Mercedes", "position": 3}],
+    "8": [{"code": "RUS", "teamName": "Mercedes", "position": 1}, {"code": "PIA", "teamName": "McLaren", "position": 2}, {"code": "SAI", "teamName": "Ferrari", "position": 3}],
+    "9": [{"code": "HAM", "teamName": "Mercedes", "position": 1}, {"code": "VER", "teamName": "Red Bull", "position": 2}, {"code": "NOR", "teamName": "McLaren", "position": 3}],
+    "10": [{"code": "PIA", "teamName": "McLaren", "position": 1}, {"code": "NOR", "teamName": "McLaren", "position": 2}, {"code": "HAM", "teamName": "Mercedes", "position": 3}],
+    "11": [{"code": "RUS", "teamName": "Mercedes", "position": 1}, {"code": "HAM", "teamName": "Mercedes", "position": 2}, {"code": "PIA", "teamName": "McLaren", "position": 3}],
+    "12": [{"code": "LEC", "teamName": "Ferrari", "position": 1}, {"code": "PIA", "teamName": "McLaren", "position": 2}, {"code": "NOR", "teamName": "McLaren", "position": 3}],
+    "13": [{"code": "ANT", "teamName": "Mercedes", "position": 1}, {"code": "RUS", "teamName": "Mercedes", "position": 2}, {"code": "VER", "teamName": "Red Bull", "position": 3}],
+    "14": [{"code": "ANT", "teamName": "Mercedes", "position": 1}, {"code": "VER", "teamName": "Red Bull", "position": 2}, {"code": "NOR", "teamName": "McLaren", "position": 3}],
+    "15": [{"code": "PIA", "teamName": "McLaren", "position": 1}, {"code": "LEC", "teamName": "Ferrari", "position": 2}, {"code": "RUS", "teamName": "Mercedes", "position": 3}],
+    "16": [{"code": "NOR", "teamName": "McLaren", "position": 1}, {"code": "VER", "teamName": "Red Bull", "position": 2}, {"code": "PIA", "teamName": "McLaren", "position": 3}],
+    "17": [{"code": "VER", "teamName": "Red Bull", "position": 1}, {"code": "LEC", "teamName": "Ferrari", "position": 2}, {"code": "ANT", "teamName": "Mercedes", "position": 3}],
+    "18": [{"code": "LEC", "teamName": "Ferrari", "position": 1}, {"code": "SAI", "teamName": "Ferrari", "position": 2}, {"code": "VER", "teamName": "Red Bull", "position": 3}]
+  }
+}

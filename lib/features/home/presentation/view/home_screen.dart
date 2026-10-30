@@ -479,6 +479,29 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
 
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: 100,
+          child: IgnorePointer(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: const [0.0, 0.45, 1.0],
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: 0.6),
+                    Colors.black,
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
           child: Column(
@@ -611,6 +634,29 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
 
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: 100,
+          child: IgnorePointer(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: const [0.0, 0.45, 1.0],
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: 0.6),
+                    Colors.black,
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
           child: Column(
@@ -727,6 +773,29 @@ class _HomeScreenState extends State<HomeScreen> {
             Icons.polyline_rounded,
             size: 160,
             color: circuitColor.withValues(alpha: 0.9),
+          ),
+        ),
+
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: 100,
+          child: IgnorePointer(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: const [0.0, 0.45, 1.0],
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: 0.6),
+                    Colors.black,
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
 

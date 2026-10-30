@@ -7,14 +7,10 @@
 
 int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
                       _In_ wchar_t *command_line, _In_ int show_command) {
-  // Attach to console when present (e.g., 'flutter run') or create a
-  // new console when running with a debugger.
   if (!::AttachConsole(ATTACH_PARENT_PROCESS) && ::IsDebuggerPresent()) {
     CreateAndAttachConsole();
   }
 
-  // Initialize COM, so that it is available for use in the library and/or
-  // plugins.
   ::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
 
   flutter::DartProject project(L"data");
@@ -25,8 +21,24 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   project.set_dart_entrypoint_arguments(std::move(command_line_arguments));
 
   FlutterWindow window(project);
-  Win32Window::Point origin(10, 10);
-  Win32Window::Size size(1280, 720);
+
+  RECT workArea;
+  SystemParametersInfo(SPI_GETWORKAREA, 0, &workArea, 0);
+
+  int workWidth = workArea.right - workArea.left;
+  int workHeight = workArea.bottom - workArea.top;
+
+  int windowWidth = 460;
+  int windowHeight = 760;
+
+  int originX = workArea.left + (workWidth - windowWidth) / 2;
+  int originY = workArea.top + (workHeight - windowHeight) / 2 - 30;
+
+  if (originX < workArea.left) originX = workArea.left + 10;
+  if (originY < workArea.top + 10) originY = workArea.top + 10;
+
+  Win32Window::Point origin(originX, originY);
+  Win32Window::Size size(windowWidth, windowHeight);
   if (!window.Create(L"f1_app", origin, size)) {
     return EXIT_FAILURE;
   }

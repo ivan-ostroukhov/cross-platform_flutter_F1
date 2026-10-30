@@ -399,14 +399,19 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                       left: 0,
                       right: 0,
                       bottom: 0,
-                      height: 60,
+                      height: 100,
                       child: IgnorePointer(
                         child: Container(
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             gradient: LinearGradient(
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
-                              colors: [Colors.transparent, Colors.black],
+                              stops: const [0.0, 0.45, 1.0],
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withValues(alpha: 0.6),
+                                Colors.black,
+                              ],
                             ),
                           ),
                         ),
