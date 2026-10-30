@@ -158,6 +158,12 @@ abstract class AppLocalizations {
   /// **'Drivers'**
   String get driversTab;
 
+  /// No description provided for @homeTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Main'**
+  String get homeTab;
+
   /// No description provided for @constructorsTab.
   ///
   /// In en, this message translates to:

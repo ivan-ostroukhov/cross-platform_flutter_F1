@@ -39,6 +39,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get driversTab => 'Drivers';
 
   @override
+  String get homeTab => 'Main';
+
+  @override
   String get constructorsTab => 'Constructors';
 
   @override

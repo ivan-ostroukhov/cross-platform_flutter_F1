@@ -389,43 +389,7 @@ class _ConstructorDetailScreenState extends State<ConstructorDetailScreen> {
                   ],
                 ),
 
-                const SizedBox(height: 20),
-
-                // HEAD TO HEAD Header Section
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: Text(
-                          'HEAD TO HEAD',
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 2.0,
-                            foreground: Paint()
-                              ..style = PaintingStyle.stroke
-                              ..strokeWidth = 1.5
-                              ..color = Colors.redAccent,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        l10n.headToHeadSubtitle,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: Colors.white60,
-                          height: 1.3,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 Divider(
                   color: Colors.white.withValues(alpha: 0.08),
                   height: 1,

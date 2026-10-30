@@ -10,6 +10,7 @@
   "errorLoading": "Ошибка загрузки данных из сети",
   "retry": "Повторить",
   "driversTab": "Пилоты",
+  "homeTab": "Главная",
   "constructorsTab": "Команды",
   "constructorsTable": "Таблица команд",
   "constructorsComingSoon": "Кубок конструкторов скоро появится",
@@ -44,6 +45,14 @@
   "worldChampionshipsLabel": "Мировой чемпионат",
   "dateOfBirthLabel": "Дата рождения",
   "countryLabel": "Страна",
+
+  "chassisLabel": "Шасси",
+  "engineLabel": "Двигатель",
+  "teamPrincipalLabel": "Руководитель команды",
+  "constructorsChampionshipsLabel": "Чемпионат конструкторов",
+  "driversChampionshipsLabel": "Чемпионат гонщиков",
+  "baseLabel": "База",
+  "headToHeadSubtitle": "Выберите пилот для сравнения статистики сезона или карьеры для более интересного сравнения.",
 
   "pastRaces": "Прошедшие гонки",
   "upcomingRaces": "Предстоящие гонки",

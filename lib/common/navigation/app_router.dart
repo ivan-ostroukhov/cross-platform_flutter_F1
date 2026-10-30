@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:f1_app/features/home/presentation/view/home_screen.dart';
 import 'package:f1_app/features/constructor/presentation/view/constructor_detail_screen.dart';
 import 'package:f1_app/features/constructor/presentation/view/constructor_list_screen.dart';
 import 'package:f1_app/features/driver/presentation/view/driver_detail_screen.dart';
@@ -7,13 +8,23 @@ import 'package:f1_app/features/schedule/presentation/view/schedule_screen.dart'
 import 'scaffold_with_nav_bar.dart';
 
 final appRouter = GoRouter(
-  initialLocation: '/drivers',
+  initialLocation: '/home',
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return ScaffoldWithNavBar(navigationShell: navigationShell);
       },
       branches: [
+        // Ветка 0: Главная
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/home',
+              builder: (context, state) => const HomeScreen(),
+            ),
+          ],
+        ),
+
         // Ветка 1: Гонщики
         StatefulShellBranch(
           routes: [

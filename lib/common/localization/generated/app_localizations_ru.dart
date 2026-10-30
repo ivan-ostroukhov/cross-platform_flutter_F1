@@ -39,6 +39,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get driversTab => 'Пилоты';
 
   @override
+  String get homeTab => 'Главная';
+
+  @override
   String get constructorsTab => 'Команды';
 
   @override

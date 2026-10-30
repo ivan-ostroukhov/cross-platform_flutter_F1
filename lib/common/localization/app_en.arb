@@ -10,6 +10,7 @@
   "errorLoading": "Failed to load data from network",
   "retry": "Retry",
   "driversTab": "Drivers",
+  "homeTab": "Main",
   "constructorsTab": "Constructors",
   "constructorsTable": "Constructors Standings",
   "constructorsComingSoon": "Constructors championship coming soon",

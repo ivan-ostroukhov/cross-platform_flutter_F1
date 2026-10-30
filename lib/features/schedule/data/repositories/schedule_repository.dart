@@ -1,48 +1,44 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+import '../../../../common/network/dio_client.dart';
 import '../../domain/models/race_model.dart';
 
 class ScheduleRepository {
-  final http.Client _client;
+  final Dio _dio;
 
-  static const List<String> _baseUrls = [
-    'https://api.jolpi.ca/ergast/f1',
-    'https://corsproxy.io/?https://api.jolpi.ca/ergast/f1',
-    'https://api.allorigins.win/raw?url=https://api.jolpi.ca/ergast/f1',
-  ];
+  ScheduleRepository({Dio? dio}) : _dio = dio ?? DioClient.create();
 
-  static const Map<String, String> _headers = {
-    'Accept': 'application/json',
-    'Connection': 'keep-alive',
-    'User-Agent':
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-  };
+  Future<dynamic> _fetchWithFallback(String path) async {
+    final response = await _dio.get<dynamic>(
+      path,
+      options: Options(
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent':
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        },
+      ),
+    );
+    return response.data;
+  }
 
-  ScheduleRepository({http.Client? client}) : _client = client ?? http.Client();
-
-  Future<dynamic> _fetchWithFallback(String path, {int retries = 2}) async {
-    for (int attempt = 0; attempt <= retries; attempt++) {
-      for (final base in _baseUrls) {
-        final url = '$base$path';
-        try {
-          final uri = Uri.parse(url);
-          final response = await _client
-              .get(uri, headers: _headers)
-              .timeout(const Duration(seconds: 7));
-
-          if (response.statusCode == 200) {
-            return jsonDecode(response.body);
+  Map<String, PodiumDriver> _parsePositionResults(dynamic data) {
+    final Map<String, PodiumDriver> map = {};
+    if (data is Map<String, dynamic>) {
+      final races =
+          data['MRData']?['RaceTable']?['Races'] as List<dynamic>? ?? [];
+      for (final race in races) {
+        final round = race['round']?.toString() ?? '';
+        final results = race['Results'] as List<dynamic>? ?? [];
+        if (results.isNotEmpty && round.isNotEmpty) {
+          final resObj = results.first;
+          if (resObj is Map<String, dynamic>) {
+            map[round] = PodiumDriver.fromJson(resObj);
           }
-        } catch (_) {
-          continue;
         }
       }
-      if (attempt < retries) {
-        await Future.delayed(const Duration(milliseconds: 500));
-      }
     }
-    throw Exception('Failed to load schedule from API');
+    return map;
   }
 
   Future<List<RaceModel>> getSeasonSchedule() async {
@@ -58,22 +54,44 @@ class ScheduleRepository {
 
     try {
       final responses = await Future.wait([
-        _fetchWithFallback('/current/results.json?limit=100&offset=0', retries: 1),
-        _fetchWithFallback('/current/results.json?limit=100&offset=100', retries: 1),
-        _fetchWithFallback('/current/results.json?limit=100&offset=200', retries: 1),
-        _fetchWithFallback('/current/results.json?limit=100&offset=300', retries: 1),
-        _fetchWithFallback('/current/results.json?limit=100&offset=400', retries: 1),
+        _fetchWithFallback('/current/results/1.json'),
+        _fetchWithFallback('/current/results/2.json'),
+        _fetchWithFallback('/current/results/3.json'),
       ]);
 
-      for (final data in responses) {
+      final p1Map = _parsePositionResults(responses[0]);
+      final p2Map = _parsePositionResults(responses[1]);
+      final p3Map = _parsePositionResults(responses[2]);
+
+      final allRounds = <String>{
+        ...p1Map.keys,
+        ...p2Map.keys,
+        ...p3Map.keys,
+      };
+
+      for (final round in allRounds) {
+        final list = <PodiumDriver>[];
+        if (p1Map.containsKey(round)) list.add(p1Map[round]!);
+        if (p2Map.containsKey(round)) list.add(p2Map[round]!);
+        if (p3Map.containsKey(round)) list.add(p3Map[round]!);
+
+        if (list.isNotEmpty) {
+          podiumMap[round] = list;
+        }
+      }
+    } catch (_) {}
+
+    try {
+      final resultsData = await _fetchWithFallback('/current/results.json?limit=1000');
+      if (resultsData is Map<String, dynamic>) {
         final races =
-            data['MRData']?['RaceTable']?['Races'] as List<dynamic>? ?? [];
+            resultsData['MRData']?['RaceTable']?['Races'] as List<dynamic>? ?? [];
         for (final race in races) {
           final round = race['round']?.toString() ?? '';
           final results = race['Results'] as List<dynamic>? ?? [];
           if (results.isNotEmpty && !podiumMap.containsKey(round)) {
             final top3 =
-            results.take(3).map((r) => PodiumDriver.fromJson(r)).toList();
+                results.take(3).map((r) => PodiumDriver.fromJson(r)).toList();
             podiumMap[round] = top3;
           }
         }
@@ -84,5 +102,20 @@ class ScheduleRepository {
       final round = json['round']?.toString() ?? '';
       return RaceModel.fromJson(json, podium: podiumMap[round]);
     }).toList();
+  }
+
+  Future<List<PodiumDriver>> getPodiumForRound(String round) async {
+    try {
+      final data = await _fetchWithFallback('/current/$round/results.json');
+      if (data is Map<String, dynamic>) {
+        final races =
+            data['MRData']?['RaceTable']?['Races'] as List<dynamic>? ?? [];
+        if (races.isNotEmpty) {
+          final results = races.first['Results'] as List<dynamic>? ?? [];
+          return results.take(3).map((r) => PodiumDriver.fromJson(r)).toList();
+        }
+      }
+    } catch (_) {}
+    return [];
   }
 }
