@@ -1,4 +1,3 @@
-import '../../../../common/utils/team_utils.dart';
 import '../../domain/constructor_model.dart';
 import '../dto/constructor_dto.dart';
 
@@ -6,7 +5,7 @@ extension ConstructorStandingDtoMapper on ConstructorStandingDto {
   ConstructorModel toDomain() {
     return ConstructorModel(
       id: constructor.constructorId,
-      name: TeamUtils.cleanTeamName(constructor.name),
+      name: constructor.name,
       nationality: constructor.nationality,
       position: int.tryParse(position) ?? 0,
       points: int.tryParse(points) ?? 0,

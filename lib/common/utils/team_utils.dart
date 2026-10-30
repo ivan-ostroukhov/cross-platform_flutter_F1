@@ -7,6 +7,7 @@ class TeamUtils {
     name = name.replaceAll(RegExp(r'\s+Formula\s+One\s+Team.*', caseSensitive: false), '');
     name = name.replaceAll(RegExp(r'\s+Aramco.*', caseSensitive: false), '');
     name = name.replaceAll(RegExp(r'\s+Stake.*', caseSensitive: false), '');
+    name = name.replaceAll(RegExp(r'\s+Racing$', caseSensitive: false), '');
     name = name.trim();
 
     final lower = name.toLowerCase();

@@ -4,7 +4,6 @@ import '../domain/constructor_repository.dart';
 import 'data_sources/constructor_data_source.dart';
 import 'dto/constructor_dto.dart';
 import 'mappers/constructor_mapper.dart';
-import '../../../../common/utils/team_utils.dart';
 
 class TeamMetaData {
   final String chassis;
@@ -263,7 +262,7 @@ class ConstructorRepository implements IConstructorRepository {
 
       return ConstructorDetailModel(
         id: constructorId,
-        name: TeamUtils.cleanTeamName(name.isNotEmpty ? name : constructorId),
+        name: name.isNotEmpty ? name : constructorId.toUpperCase(),
         chassis: meta.chassis,
         engine: meta.engine,
         teamPrincipal: meta.teamPrincipal,
@@ -285,7 +284,7 @@ class ConstructorRepository implements IConstructorRepository {
       final meta = _getMeta(constructorId, constructorId);
       return ConstructorDetailModel(
         id: constructorId,
-        name: TeamUtils.cleanTeamName(constructorId),
+        name: constructorId.toUpperCase(),
         chassis: meta.chassis,
         engine: meta.engine,
         teamPrincipal: meta.teamPrincipal,
