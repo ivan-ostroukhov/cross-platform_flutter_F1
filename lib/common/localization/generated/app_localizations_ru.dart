@@ -112,6 +112,28 @@ class AppLocalizationsRu extends AppLocalizations {
   String get countryLabel => 'Страна';
 
   @override
+  String get chassisLabel => 'Шасси';
+
+  @override
+  String get engineLabel => 'Двигатель';
+
+  @override
+  String get teamPrincipalLabel => 'Руководитель команды';
+
+  @override
+  String get constructorsChampionshipsLabel => 'Чемпионат конструкторов';
+
+  @override
+  String get driversChampionshipsLabel => 'Чемпионат гонщиков';
+
+  @override
+  String get baseLabel => 'База';
+
+  @override
+  String get headToHeadSubtitle =>
+      'Выберите пилот для сравнения статистики сезона или карьеры для более интересного сравнения.';
+
+  @override
   String get pastRaces => 'Прошедшие гонки';
 
   @override

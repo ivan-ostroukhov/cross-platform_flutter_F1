@@ -296,6 +296,48 @@ abstract class AppLocalizations {
   /// **'Country'**
   String get countryLabel;
 
+  /// No description provided for @chassisLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Chassis'**
+  String get chassisLabel;
+
+  /// No description provided for @engineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Engine'**
+  String get engineLabel;
+
+  /// No description provided for @teamPrincipalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Team Principal'**
+  String get teamPrincipalLabel;
+
+  /// No description provided for @constructorsChampionshipsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Constructors Championships'**
+  String get constructorsChampionshipsLabel;
+
+  /// No description provided for @driversChampionshipsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Drivers Championships'**
+  String get driversChampionshipsLabel;
+
+  /// No description provided for @baseLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Base'**
+  String get baseLabel;
+
+  /// No description provided for @headToHeadSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a driver to compare season or career stats for a more interesting comparison.'**
+  String get headToHeadSubtitle;
+
   /// No description provided for @pastRaces.
   ///
   /// In en, this message translates to:

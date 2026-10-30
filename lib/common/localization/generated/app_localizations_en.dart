@@ -112,6 +112,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get countryLabel => 'Country';
 
   @override
+  String get chassisLabel => 'Chassis';
+
+  @override
+  String get engineLabel => 'Engine';
+
+  @override
+  String get teamPrincipalLabel => 'Team Principal';
+
+  @override
+  String get constructorsChampionshipsLabel => 'Constructors Championships';
+
+  @override
+  String get driversChampionshipsLabel => 'Drivers Championships';
+
+  @override
+  String get baseLabel => 'Base';
+
+  @override
+  String get headToHeadSubtitle =>
+      'Select a driver to compare season or career stats for a more interesting comparison.';
+
+  @override
   String get pastRaces => 'Past Races';
 
   @override

@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:f1_app/features/constructor/presentation/view/constructor_detail_screen.dart';
 import 'package:f1_app/features/constructor/presentation/view/constructor_list_screen.dart';
 import 'package:f1_app/features/driver/presentation/view/driver_detail_screen.dart';
 import 'package:f1_app/features/driver/presentation/view/driver_list_screen.dart';
@@ -38,6 +39,15 @@ final appRouter = GoRouter(
             GoRoute(
               path: '/constructors',
               builder: (context, state) => const ConstructorListScreen(),
+              routes: [
+                GoRoute(
+                  path: ':id',
+                  builder: (context, state) {
+                    final id = state.pathParameters['id']!;
+                    return ConstructorDetailScreen(constructorId: id);
+                  },
+                ),
+              ],
             ),
           ],
         ),

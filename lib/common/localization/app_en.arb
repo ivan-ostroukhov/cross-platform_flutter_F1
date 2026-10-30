@@ -45,6 +45,14 @@
   "dateOfBirthLabel": "Date of Birth",
   "countryLabel": "Country",
 
+  "chassisLabel": "Chassis",
+  "engineLabel": "Engine",
+  "teamPrincipalLabel": "Team Principal",
+  "constructorsChampionshipsLabel": "Constructors Championships",
+  "driversChampionshipsLabel": "Drivers Championships",
+  "baseLabel": "Base",
+  "headToHeadSubtitle": "Select a driver to compare season or career stats for a more interesting comparison.",
+
   "pastRaces": "Past Races",
   "upcomingRaces": "Upcoming Races",
   "raceCountdownPrefix": "Race starts in",
