@@ -1,4 +1,5 @@
 import '../../../../common/theme/image_sources.dart';
+import '../../../../common/utils/team_utils.dart';
 import '../../domain/driver_model.dart';
 import '../dto/driver_dto.dart';
 
@@ -9,7 +10,7 @@ extension DriverStandingDtoMapper on DriverStandingDto {
       id: driver.driverId,
       name: '${driver.givenName} ${driver.familyName}',
       permanentNumber: int.tryParse(driver.permanentNumber ?? '') ?? 0,
-      teamName: team,
+      teamName: TeamUtils.cleanTeamName(team),
       points: double.tryParse(points)?.round() ?? 0,
       teammateId: teammateId,
       imageUrl: ImageSources.driverPlaceholder,

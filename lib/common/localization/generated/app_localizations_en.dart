@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Formula 1 Hub';
+  String get appTitle => 'Apex';
 
   @override
   String get searchPlaceholder => 'Search driver or team...';
@@ -39,7 +39,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get driversTab => 'Drivers';
 
   @override
+  String get homeTab => 'Main';
+
+  @override
   String get constructorsTab => 'Constructors';
+
+  @override
+  String get constructorsTable => 'Constructors Standings';
 
   @override
   String get constructorsComingSoon => 'Constructors championship coming soon';
@@ -76,7 +82,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String seasonPrefix(String year) {
-    return '$year Season';
+    return 'Season $year';
+  }
+
+  @override
+  String get selectSeason => 'Select Season';
+
+  @override
+  String sinceDebut(String year) {
+    return 'Since Debut ($year)';
   }
 
   @override
@@ -101,6 +115,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get countryLabel => 'Country';
 
   @override
+  String get chassisLabel => 'Chassis';
+
+  @override
+  String get engineLabel => 'Engine';
+
+  @override
+  String get teamPrincipalLabel => 'Team Principal';
+
+  @override
+  String get constructorsChampionshipsLabel => 'Constructors Championships';
+
+  @override
+  String get driversChampionshipsLabel => 'Drivers Championships';
+
+  @override
+  String get baseLabel => 'Base';
+
+  @override
+  String get headToHeadSubtitle =>
+      'Select a driver to compare season or career stats for a more interesting comparison.';
+
+  @override
   String get pastRaces => 'Past Races';
 
   @override
@@ -123,4 +159,58 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get resultsButton => 'Results';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get generalSection => 'General';
+
+  @override
+  String get favoritesSection => 'Favorites';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get appTheme => 'App Theme';
+
+  @override
+  String get unitSystem => 'Unit System';
+
+  @override
+  String get timeFormat24 => '24-Hour Time';
+
+  @override
+  String get detailedResults => 'Detailed Results';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get selectDriver => 'Select Driver';
+
+  @override
+  String get selectTeam => 'Select Team';
+
+  @override
+  String get searchDriver => 'Search driver';
+
+  @override
+  String get searchTeam => 'Search group';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get themeSystem => 'System';
+
+  @override
+  String get themeDark => 'Dark';
+
+  @override
+  String get themeLight => 'Light';
+
+  @override
+  String get metricUnits => 'Metric';
 }

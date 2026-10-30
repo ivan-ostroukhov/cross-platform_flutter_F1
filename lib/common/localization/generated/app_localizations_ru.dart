@@ -9,7 +9,7 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
-  String get appTitle => 'Формула 1';
+  String get appTitle => 'Apex';
 
   @override
   String get searchPlaceholder => 'Поиск пилота или команды...';
@@ -39,7 +39,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get driversTab => 'Пилоты';
 
   @override
+  String get homeTab => 'Главная';
+
+  @override
   String get constructorsTab => 'Команды';
+
+  @override
+  String get constructorsTable => 'Таблица команд';
 
   @override
   String get constructorsComingSoon => 'Кубок конструкторов скоро появится';
@@ -76,7 +82,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String seasonPrefix(String year) {
-    return '$year Сезон';
+    return 'Сезон $year';
+  }
+
+  @override
+  String get selectSeason => 'Выберите сезон';
+
+  @override
+  String sinceDebut(String year) {
+    return 'С дебюта ($year)';
   }
 
   @override
@@ -101,6 +115,28 @@ class AppLocalizationsRu extends AppLocalizations {
   String get countryLabel => 'Страна';
 
   @override
+  String get chassisLabel => 'Шасси';
+
+  @override
+  String get engineLabel => 'Двигатель';
+
+  @override
+  String get teamPrincipalLabel => 'Руководитель команды';
+
+  @override
+  String get constructorsChampionshipsLabel => 'Чемпионат конструкторов';
+
+  @override
+  String get driversChampionshipsLabel => 'Чемпионат гонщиков';
+
+  @override
+  String get baseLabel => 'База';
+
+  @override
+  String get headToHeadSubtitle =>
+      'Выберите пилот для сравнения статистики сезона или карьеры для более интересного сравнения.';
+
+  @override
   String get pastRaces => 'Прошедшие гонки';
 
   @override
@@ -123,4 +159,58 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get resultsButton => 'Результаты';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get generalSection => 'Общее';
+
+  @override
+  String get favoritesSection => 'Избранное';
+
+  @override
+  String get notifications => 'Уведомления';
+
+  @override
+  String get appTheme => 'Тема приложения';
+
+  @override
+  String get unitSystem => 'Система единиц';
+
+  @override
+  String get timeFormat24 => '24 Часа Время';
+
+  @override
+  String get detailedResults => 'Подробные результаты';
+
+  @override
+  String get language => 'Язык';
+
+  @override
+  String get selectDriver => 'Select Driver';
+
+  @override
+  String get selectTeam => 'Выбрать команду';
+
+  @override
+  String get searchDriver => 'Поиск гонщика';
+
+  @override
+  String get searchTeam => 'Поисковая группа';
+
+  @override
+  String get cancel => 'Отмена';
+
+  @override
+  String get themeSystem => 'Система';
+
+  @override
+  String get themeDark => 'Темная';
+
+  @override
+  String get themeLight => 'Светлая';
+
+  @override
+  String get metricUnits => 'Метрика';
 }

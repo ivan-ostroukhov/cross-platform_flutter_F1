@@ -1,6 +1,6 @@
 {
   "@@locale": "ru",
-  "appTitle": "Формула 1",
+  "appTitle": "Apex",
   "searchPlaceholder": "Поиск пилота или команды...",
   "points": "Очков",
   "teammate": "Напарник",
@@ -10,7 +10,9 @@
   "errorLoading": "Ошибка загрузки данных из сети",
   "retry": "Повторить",
   "driversTab": "Пилоты",
+  "homeTab": "Главная",
   "constructorsTab": "Команды",
+  "constructorsTable": "Таблица команд",
   "constructorsComingSoon": "Кубок конструкторов скоро появится",
   "scheduleTab": "Календарь",
   "roundPrefix": "Этап",
@@ -23,8 +25,15 @@
   "podiumsLabel": "Подиумы",
   "polesLabel": "Поулы",
   "dnfsLabel": "DNFs",
-  "seasonPrefix": "{year} Сезон",
+  "seasonPrefix": "Сезон {year}",
   "@seasonPrefix": {
+    "placeholders": {
+      "year": { "type": "String" }
+    }
+  },
+  "selectSeason": "Выберите сезон",
+  "sinceDebut": "С дебюта ({year})",
+  "@sinceDebut": {
     "placeholders": {
       "year": { "type": "String" }
     }
@@ -37,6 +46,14 @@
   "dateOfBirthLabel": "Дата рождения",
   "countryLabel": "Страна",
 
+  "chassisLabel": "Шасси",
+  "engineLabel": "Двигатель",
+  "teamPrincipalLabel": "Руководитель команды",
+  "constructorsChampionshipsLabel": "Чемпионат конструкторов",
+  "driversChampionshipsLabel": "Чемпионат гонщиков",
+  "baseLabel": "База",
+  "headToHeadSubtitle": "Выберите пилот для сравнения статистики сезона или карьеры для более интересного сравнения.",
+
   "pastRaces": "Прошедшие гонки",
   "upcomingRaces": "Предстоящие гонки",
   "raceCountdownPrefix": "Гонка начинается через",
@@ -44,5 +61,24 @@
   "hoursShort": "Часы",
   "minutesShort": "Минуты",
   "scheduleButton": "Расписание",
-  "resultsButton": "Результаты"
+  "resultsButton": "Результаты",
+
+  "settingsTitle": "Settings",
+  "generalSection": "Общее",
+  "favoritesSection": "Избранное",
+  "notifications": "Уведомления",
+  "appTheme": "Тема приложения",
+  "unitSystem": "Система единиц",
+  "timeFormat24": "24 Часа Время",
+  "detailedResults": "Подробные результаты",
+  "language": "Язык",
+  "selectDriver": "Select Driver",
+  "selectTeam": "Выбрать команду",
+  "searchDriver": "Поиск гонщика",
+  "searchTeam": "Поисковая группа",
+  "cancel": "Отмена",
+  "themeSystem": "Система",
+  "themeDark": "Темная",
+  "themeLight": "Светлая",
+  "metricUnits": "Метрика"
 }

@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Formula 1 Hub'**
+  /// **'Apex'**
   String get appTitle;
 
   /// No description provided for @searchPlaceholder.
@@ -158,11 +158,23 @@ abstract class AppLocalizations {
   /// **'Drivers'**
   String get driversTab;
 
+  /// No description provided for @homeTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Main'**
+  String get homeTab;
+
   /// No description provided for @constructorsTab.
   ///
   /// In en, this message translates to:
   /// **'Constructors'**
   String get constructorsTab;
+
+  /// No description provided for @constructorsTable.
+  ///
+  /// In en, this message translates to:
+  /// **'Constructors Standings'**
+  String get constructorsTable;
 
   /// No description provided for @constructorsComingSoon.
   ///
@@ -233,8 +245,20 @@ abstract class AppLocalizations {
   /// No description provided for @seasonPrefix.
   ///
   /// In en, this message translates to:
-  /// **'{year} Season'**
+  /// **'Season {year}'**
   String seasonPrefix(String year);
+
+  /// No description provided for @selectSeason.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Season'**
+  String get selectSeason;
+
+  /// No description provided for @sinceDebut.
+  ///
+  /// In en, this message translates to:
+  /// **'Since Debut ({year})'**
+  String sinceDebut(String year);
 
   /// No description provided for @driverCodeLabel.
   ///
@@ -277,6 +301,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Country'**
   String get countryLabel;
+
+  /// No description provided for @chassisLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Chassis'**
+  String get chassisLabel;
+
+  /// No description provided for @engineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Engine'**
+  String get engineLabel;
+
+  /// No description provided for @teamPrincipalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Team Principal'**
+  String get teamPrincipalLabel;
+
+  /// No description provided for @constructorsChampionshipsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Constructors Championships'**
+  String get constructorsChampionshipsLabel;
+
+  /// No description provided for @driversChampionshipsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Drivers Championships'**
+  String get driversChampionshipsLabel;
+
+  /// No description provided for @baseLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Base'**
+  String get baseLabel;
+
+  /// No description provided for @headToHeadSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a driver to compare season or career stats for a more interesting comparison.'**
+  String get headToHeadSubtitle;
 
   /// No description provided for @pastRaces.
   ///
@@ -325,6 +391,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Results'**
   String get resultsButton;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTitle;
+
+  /// No description provided for @generalSection.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get generalSection;
+
+  /// No description provided for @favoritesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get favoritesSection;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @appTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'App Theme'**
+  String get appTheme;
+
+  /// No description provided for @unitSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit System'**
+  String get unitSystem;
+
+  /// No description provided for @timeFormat24.
+  ///
+  /// In en, this message translates to:
+  /// **'24-Hour Time'**
+  String get timeFormat24;
+
+  /// No description provided for @detailedResults.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed Results'**
+  String get detailedResults;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @selectDriver.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Driver'**
+  String get selectDriver;
+
+  /// No description provided for @selectTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Team'**
+  String get selectTeam;
+
+  /// No description provided for @searchDriver.
+  ///
+  /// In en, this message translates to:
+  /// **'Search driver'**
+  String get searchDriver;
+
+  /// No description provided for @searchTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Search group'**
+  String get searchTeam;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get themeSystem;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get themeDark;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get themeLight;
+
+  /// No description provided for @metricUnits.
+  ///
+  /// In en, this message translates to:
+  /// **'Metric'**
+  String get metricUnits;
 }
 
 class _AppLocalizationsDelegate

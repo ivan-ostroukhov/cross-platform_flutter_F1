@@ -28,6 +28,11 @@ class ScaffoldWithNavBar extends StatelessWidget {
         onDestinationSelected: _onDestinationSelected,
         destinations: [
           NavigationDestination(
+            icon: const Icon(Icons.home_outlined),
+            selectedIcon: const Icon(Icons.home),
+            label: l10n.homeTab,
+          ),
+          NavigationDestination(
             icon: const Icon(Icons.sports_motorsports_outlined),
             selectedIcon: const Icon(Icons.sports_motorsports),
             label: l10n.driversTab,

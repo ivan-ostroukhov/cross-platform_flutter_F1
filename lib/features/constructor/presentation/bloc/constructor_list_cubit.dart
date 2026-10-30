@@ -7,13 +7,18 @@ import 'constructor_list_state.dart';
 class ConstructorListCubit extends Cubit<ConstructorListState> {
   final IConstructorRepository _repository;
   List<ConstructorModel> _allConstructors = [];
+  String _currentSeason = '2026';
+
+  String get currentSeason => _currentSeason;
 
   ConstructorListCubit(this._repository) : super(const ConstructorListLoading());
 
-  Future<void> loadConstructors() async {
+  Future<void> loadConstructors({String season = '2026'}) async {
+    _currentSeason = season;
     emit(const ConstructorListLoading());
     try {
-      _allConstructors = await _repository.getConstructors();
+      _allConstructors = await _repository.getConstructors(season: season);
+      emit(ConstructorListLoaded(_allConstructors));
       emit(ConstructorListLoaded(_allConstructors));
     } on LoadException {
       emit(const ConstructorListError());

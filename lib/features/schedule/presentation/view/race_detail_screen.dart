@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
 import '../../../../common/utils/f1_colors.dart';
+import '../../data/repositories/schedule_repository.dart';
 import '../../domain/models/circuit_stats.dart';
 import '../../domain/models/race_model.dart';
 
-class RaceDetailScreen extends StatelessWidget {
+class RaceDetailScreen extends StatefulWidget {
   final RaceModel race;
 
   const RaceDetailScreen({
@@ -12,13 +15,69 @@ class RaceDetailScreen extends StatelessWidget {
   });
 
   @override
+  State<RaceDetailScreen> createState() => _RaceDetailScreenState();
+}
+
+class _RaceDetailScreenState extends State<RaceDetailScreen> {
+  List<PodiumDriver>? _podium;
+
+  @override
+  void initState() {
+    super.initState();
+    _podium = widget.race.podium;
+    if ((_podium == null || _podium!.isEmpty) && widget.race.isCompleted) {
+      _fetchPodium();
+    }
+  }
+
+  Future<void> _fetchPodium() async {
+    try {
+      final repository = ScheduleRepository();
+      final podium = await repository.getPodiumForRound(widget.race.round);
+      if (mounted && podium.isNotEmpty) {
+        setState(() {
+          _podium = podium;
+        });
+      }
+    } catch (_) {}
+  }
+
+  String _getDriverIdFromCode(String code) {
+    final c = code.toUpperCase();
+    switch (c) {
+      case 'VER': return 'verstappen';
+      case 'LEC': return 'leclerc';
+      case 'HAM': return 'hamilton';
+      case 'ANT': return 'antonelli';
+      case 'NOR': return 'norris';
+      case 'PIA': return 'piastri';
+      case 'SAI': return 'sainz';
+      case 'ALO': return 'alonso';
+      case 'RUS': return 'russell';
+      case 'LAW': return 'lawson';
+      case 'STR': return 'stroll';
+      case 'TSU': return 'tsunoda';
+      case 'GAS': return 'gasly';
+      case 'OCO': return 'ocon';
+      case 'ALB': return 'albon';
+      case 'HUL': return 'hulkenberg';
+      case 'MAG': return 'magnussen';
+      case 'BEA': return 'bearman';
+      case 'BOR': return 'bortoleto';
+      case 'DOO': return 'doohan';
+      case 'HAD': return 'hadjar';
+      default: return code.toLowerCase();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.paddingOf(context).top;
     final circuitColor = F1Colors.getCircuitColor(
-      race.circuitId.isNotEmpty ? race.circuitId : race.raceName,
+      widget.race.circuitId.isNotEmpty ? widget.race.circuitId : widget.race.raceName,
     );
 
-    final stats = CircuitStats.getFor(race.circuitId);
+    final stats = CircuitStats.getFor(widget.race.circuitId);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -82,7 +141,7 @@ class RaceDetailScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        race.raceName,
+                        widget.race.raceName,
                         style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w900,
@@ -92,7 +151,7 @@ class RaceDetailScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        race.circuitName,
+                        widget.race.circuitName,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -101,7 +160,7 @@ class RaceDetailScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        race.dateRange,
+                        widget.race.dateRange,
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
@@ -170,19 +229,57 @@ class RaceDetailScreen extends StatelessWidget {
                           ),
                           Expanded(
                             flex: 5,
-                            child: SizedBox(
-                              height: 210,
-                              child: Center(
-                                child: Icon(
-                                  Icons.polyline_rounded,
-                                  size: 190,
-                                  color: circuitColor.withValues(alpha: 0.9),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                SizedBox(
+                                  height: 170,
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.polyline_rounded,
+                                      size: 160,
+                                      color: circuitColor.withValues(alpha: 0.9),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
                           ),
                         ],
                       ),
+
+                      if (_podium != null && _podium!.isNotEmpty) ...[
+                        const SizedBox(height: 28),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: _podium!.map((driver) {
+                            final teamColor = F1Colors.getTeamColor(driver.teamName);
+                            final driverId = _getDriverIdFromCode(driver.code);
+
+                            return GestureDetector(
+                              onTap: () => context.push('/drivers/$driverId'),
+                              behavior: HitTestBehavior.opaque,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _SlantedStripes(color: teamColor),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    driver.code,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w900,
+                                      color: Colors.white,
+                                      letterSpacing: 0.8,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+
                       const SizedBox(height: 32),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -214,11 +311,11 @@ class RaceDetailScreen extends StatelessWidget {
           ),
           SliverList(
             delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                final session = race.sessions[index];
+              (context, index) {
+                final session = widget.race.sessions[index];
                 return _SessionTile(session: session);
               },
-              childCount: race.sessions.length,
+              childCount: widget.race.sessions.length,
             ),
           ),
           SliverToBoxAdapter(
@@ -228,6 +325,52 @@ class RaceDetailScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class _SlantedStripes extends StatelessWidget {
+  final Color color;
+
+  const _SlantedStripes({required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      size: const Size(26, 14),
+      painter: _SlantedStripesPainter(color: color),
+    );
+  }
+}
+
+class _SlantedStripesPainter extends CustomPainter {
+  final Color color;
+
+  _SlantedStripesPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    const double stripeWidth = 5.5;
+    const double gap = 3.0;
+    const double slant = 6.0;
+
+    for (int i = 0; i < 3; i++) {
+      final startX = i * (stripeWidth + gap);
+      final path = Path()
+        ..moveTo(startX + slant, 0)
+        ..lineTo(startX + slant + stripeWidth, 0)
+        ..lineTo(startX + stripeWidth, size.height)
+        ..lineTo(startX, size.height)
+        ..close();
+      canvas.drawPath(path, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _SlantedStripesPainter oldDelegate) =>
+      oldDelegate.color != color;
 }
 
 class _StatRow extends StatelessWidget {

@@ -138,7 +138,6 @@ class _DriversContent extends StatelessWidget {
                   ),
                 ),
 
-                // Строка заголовка и действий в самом верху градиента
                 SafeArea(
                   bottom: false,
                   child: Padding(
@@ -178,7 +177,6 @@ class _DriversContent extends StatelessWidget {
                   ),
                 ),
 
-                // Карточка лидера (1 место)
                 Positioned(
                   left: 0,
                   right: 0,

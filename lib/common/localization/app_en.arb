@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appTitle": "Formula 1 Hub",
+  "appTitle": "Apex",
   "searchPlaceholder": "Search driver or team...",
   "points": "PTS",
   "teammate": "Teammate",
@@ -10,7 +10,9 @@
   "errorLoading": "Failed to load data from network",
   "retry": "Retry",
   "driversTab": "Drivers",
+  "homeTab": "Main",
   "constructorsTab": "Constructors",
+  "constructorsTable": "Constructors Standings",
   "constructorsComingSoon": "Constructors championship coming soon",
   "scheduleTab": "Schedule",
   "roundPrefix": "Round",
@@ -23,8 +25,15 @@
   "podiumsLabel": "Podiums",
   "polesLabel": "Poles",
   "dnfsLabel": "DNFs",
-  "seasonPrefix": "{year} Season",
+  "seasonPrefix": "Season {year}",
   "@seasonPrefix": {
+    "placeholders": {
+      "year": { "type": "String" }
+    }
+  },
+  "selectSeason": "Select Season",
+  "sinceDebut": "Since Debut ({year})",
+  "@sinceDebut": {
     "placeholders": {
       "year": { "type": "String" }
     }
@@ -37,6 +46,14 @@
   "dateOfBirthLabel": "Date of Birth",
   "countryLabel": "Country",
 
+  "chassisLabel": "Chassis",
+  "engineLabel": "Engine",
+  "teamPrincipalLabel": "Team Principal",
+  "constructorsChampionshipsLabel": "Constructors Championships",
+  "driversChampionshipsLabel": "Drivers Championships",
+  "baseLabel": "Base",
+  "headToHeadSubtitle": "Select a driver to compare season or career stats for a more interesting comparison.",
+
   "pastRaces": "Past Races",
   "upcomingRaces": "Upcoming Races",
   "raceCountdownPrefix": "Race starts in",
@@ -44,7 +61,26 @@
   "hoursShort": "Hours",
   "minutesShort": "Mins",
   "scheduleButton": "Schedule",
-  "resultsButton": "Results"
+  "resultsButton": "Results",
+
+  "settingsTitle": "Settings",
+  "generalSection": "General",
+  "favoritesSection": "Favorites",
+  "notifications": "Notifications",
+  "appTheme": "App Theme",
+  "unitSystem": "Unit System",
+  "timeFormat24": "24-Hour Time",
+  "detailedResults": "Detailed Results",
+  "language": "Language",
+  "selectDriver": "Select Driver",
+  "selectTeam": "Select Team",
+  "searchDriver": "Search driver",
+  "searchTeam": "Search group",
+  "cancel": "Cancel",
+  "themeSystem": "System",
+  "themeDark": "Dark",
+  "themeLight": "Light",
+  "metricUnits": "Metric"
 }
 
 

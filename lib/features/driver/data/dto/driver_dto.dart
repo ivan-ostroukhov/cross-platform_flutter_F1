@@ -49,6 +49,8 @@ class StandingsListDto {
 @JsonSerializable(createToJson: false)
 class DriverStandingDto {
   final String points;
+  final String? position;
+  final String? wins;
   @JsonKey(name: 'Driver')
   final DriverInfoDto driver;
   @JsonKey(name: 'Constructors')
@@ -56,6 +58,8 @@ class DriverStandingDto {
 
   const DriverStandingDto({
     required this.points,
+    this.position,
+    this.wins,
     required this.driver,
     required this.constructors,
   });

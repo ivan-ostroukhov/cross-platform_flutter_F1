@@ -19,6 +19,7 @@ import 'features/constructor/domain/constructor_repository.dart';
 import 'features/schedule/data/data_sources/schedule_remote_data_source.dart';
 import 'features/schedule/data/schedule_repository.dart';
 import 'features/schedule/domain/schedule_repository.dart';
+
 class F1App extends StatelessWidget {
   const F1App({super.key});
 
