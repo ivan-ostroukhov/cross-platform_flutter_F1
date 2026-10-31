@@ -1,6 +1,8 @@
 #include "widget_window.h"
 
 #include <dwmapi.h>
+#include <flutter/method_channel.h>
+#include <flutter/standard_method_codec.h>
 #include <optional>
 
 #include "desktop_shell_manager.h"
@@ -49,6 +51,22 @@ bool WidgetWindow::OnCreate() {
 
   RegisterPlugins(flutter_controller_->engine());
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
+
+  auto channel = std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
+      flutter_controller_->engine()->messenger(),
+      "com.f1app.apex/desktop_widgets",
+      &flutter::StandardMethodCodec::GetInstance());
+
+  channel->SetMethodCallHandler(
+      [this](const flutter::MethodCall<flutter::EncodableValue>& call,
+             std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+        if (call.method_name() == "closeClockWidget" || call.method_name() == "closeWidget") {
+          result->Success(flutter::EncodableValue(true));
+          this->Destroy();
+        } else {
+          result->NotImplemented();
+        }
+      });
 
   flutter_controller_->engine()->SetNextFrameCallback([this, hwnd]() {
     this->Show();

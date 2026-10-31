@@ -15,4 +15,16 @@ class DesktopWidgetService {
       return false;
     }
   }
+
+  static Future<bool> closeClockWidget() async {
+    try {
+      debugPrint('[Dart DesktopWidgetService] Invoking MethodChannel closeClockWidget...');
+      final result = await _channel.invokeMethod<bool>('closeClockWidget');
+      debugPrint('[Dart DesktopWidgetService] Result from C++: $result');
+      return result ?? false;
+    } catch (e, st) {
+      debugPrint('[Dart DesktopWidgetService] Error calling closeClockWidget: $e\n$st');
+      return false;
+    }
+  }
 }

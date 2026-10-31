@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:ui';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../../data/desktop_widget_service.dart';
 
 class ClockWidgetScreen extends StatefulWidget {
   const ClockWidgetScreen({super.key});
@@ -19,7 +19,6 @@ class _ClockWidgetScreenState extends State<ClockWidgetScreen> {
   void initState() {
     super.initState();
     _now = DateTime.now();
-    debugPrint('[Dart ClockWidgetScreen] initState() called');
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted) {
         setState(() {
@@ -37,7 +36,6 @@ class _ClockWidgetScreenState extends State<ClockWidgetScreen> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('[Dart ClockWidgetScreen] build() rendering...');
     final timeStr = DateFormat('HH:mm').format(_now);
     final secStr = DateFormat('ss').format(_now);
     final dateStr = DateFormat('EEEE, d MMMM', 'ru').format(_now);
@@ -68,10 +66,10 @@ class _ClockWidgetScreenState extends State<ClockWidgetScreen> {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -100,23 +98,25 @@ class _ClockWidgetScreenState extends State<ClockWidgetScreen> {
                             ),
                           ],
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.redAccent.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: Colors.redAccent.withValues(alpha: 0.4),
+                        Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () => DesktopWidgetService.closeClockWidget(),
+                              child: Container(
+                                width: 22,
+                                height: 22,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.15),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.close_rounded,
+                                  color: Colors.white70,
+                                  size: 14,
+                                ),
+                              ),
                             ),
-                          ),
-                          child: const Text(
-                            'Apex',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          ],
                         ),
                       ],
                     ),

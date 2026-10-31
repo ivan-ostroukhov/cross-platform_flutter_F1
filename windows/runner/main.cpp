@@ -14,6 +14,15 @@
 
 static std::vector<std::unique_ptr<WidgetWindow>> g_widget_windows;
 
+void CloseAllWidgetWindows() {
+  for (auto& widgetWindow : g_widget_windows) {
+    if (widgetWindow) {
+      widgetWindow->Destroy();
+    }
+  }
+  g_widget_windows.clear();
+}
+
 void RegisterDesktopWidgetChannel(flutter::FlutterEngine* engine) {
   if (!engine) return;
 
@@ -25,9 +34,6 @@ void RegisterDesktopWidgetChannel(flutter::FlutterEngine* engine) {
   channel->SetMethodCallHandler(
       [](const flutter::MethodCall<flutter::EncodableValue>& call,
          std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-        std::cout << "[C++ Channel] Method called: " << call.method_name() << std::endl;
-        OutputDebugStringA(("[C++ Channel] Method called: " + call.method_name() + "\n").c_str());
-
         if (call.method_name() == "createClockWidget") {
           flutter::DartProject project(L"data");
           auto widgetWindow = std::make_unique<WidgetWindow>(project, "clock");
@@ -37,14 +43,13 @@ void RegisterDesktopWidgetChannel(flutter::FlutterEngine* engine) {
           if (widgetWindow->Create(L"Apex Clock Widget", origin, size)) {
             widgetWindow->SetQuitOnClose(false);
             g_widget_windows.push_back(std::move(widgetWindow));
-            std::cout << "[C++ Channel] WidgetWindow created successfully!" << std::endl;
-            OutputDebugStringA("[C++ Channel] WidgetWindow created successfully!\n");
             result->Success(flutter::EncodableValue(true));
           } else {
-            std::cout << "[C++ Channel] WidgetWindow creation failed!" << std::endl;
-            OutputDebugStringA("[C++ Channel] WidgetWindow creation failed!\n");
             result->Error("CREATE_FAILED", "Failed to create clock widget window");
           }
+        } else if (call.method_name() == "closeClockWidget" || call.method_name() == "closeWidget") {
+          CloseAllWidgetWindows();
+          result->Success(flutter::EncodableValue(true));
         } else {
           result->NotImplemented();
         }
@@ -90,7 +95,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   }
 
   RegisterDesktopWidgetChannel(window.GetEngine());
-  window.SetQuitOnClose(false);
+  window.SetQuitOnClose(true);
 
   ::MSG msg;
   while (::GetMessage(&msg, nullptr, 0, 0)) {
