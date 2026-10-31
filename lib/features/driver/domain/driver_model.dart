@@ -4,7 +4,7 @@ class DriverModel {
   final int permanentNumber;
   final String teamName;
   final int points;
-  final String teammateId; // ID связанной сущности
+  final String teammateId;
   final String imageUrl;
 
   const DriverModel({
