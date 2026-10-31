@@ -12,6 +12,7 @@ class TeamUtils {
 
     final lower = name.toLowerCase();
     if (lower == 'rb') return 'Racing Bulls';
+    if (lower.contains('cadillac')) return 'Cadillac';
     if (lower.contains('red bull')) return 'Red Bull';
     if (lower.contains('ferrari')) return 'Ferrari';
     if (lower.contains('mercedes')) return 'Mercedes';

@@ -446,7 +446,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   _buildSettingRow(
                     icon: Icons.widgets_outlined,
-                    title: 'Виджет часов на рабочий стол',
+                    title: 'Виджет часов на рабочий стол (beta)',
                     trailing: const Icon(Icons.add_circle_outline, color: Colors.redAccent, size: 22),
                     onTap: () async {
                       final success = await DesktopWidgetService.createClockWidget();
