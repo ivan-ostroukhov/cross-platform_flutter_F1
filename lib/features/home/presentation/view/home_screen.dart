@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../common/utils/f1_colors.dart';
 import '../../../../common/network/local_storage_service.dart';
+import '../../../../common/widgets/animated_number_text.dart';
 import '../../../driver/domain/i_driver_repository.dart';
 import '../../../driver/domain/driver_detail_model.dart';
 import '../../../constructor/domain/constructor_repository.dart';
@@ -705,8 +706,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   const Icon(Icons.bar_chart, size: 15, color: Colors.blueAccent),
                   const SizedBox(width: 4),
-                  Text(
-                    '$pos поз',
+                  AnimatedNumberText(
+                    value: double.tryParse(pos) ?? 1,
+                    padLeftZeros: true,
+                    padWidth: 2,
+                    suffix: ' поз',
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
@@ -716,8 +720,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(width: 12),
                   const Icon(Icons.stars, size: 15, color: Colors.blueAccent),
                   const SizedBox(width: 4),
-                  Text(
-                    '$wins Победы',
+                  AnimatedNumberText(
+                    value: double.tryParse(wins) ?? 0,
+                    padLeftZeros: true,
+                    padWidth: 2,
+                    suffix: ' Победы',
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
@@ -731,8 +738,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.baseline,
                 textBaseline: TextBaseline.alphabetic,
                 children: [
-                  Text(
-                    pts,
+                  AnimatedNumberText(
+                    value: double.tryParse(pts) ?? 0,
                     style: const TextStyle(
                       fontSize: 44,
                       fontWeight: FontWeight.w900,
@@ -856,8 +863,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   const Icon(Icons.bar_chart, size: 15, color: Colors.blueAccent),
                   const SizedBox(width: 4),
-                  Text(
-                    '$pos поз',
+                  AnimatedNumberText(
+                    value: double.tryParse(pos) ?? 1,
+                    padLeftZeros: true,
+                    padWidth: 2,
+                    suffix: ' поз',
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
@@ -867,8 +877,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(width: 12),
                   const Icon(Icons.stars, size: 15, color: Colors.blueAccent),
                   const SizedBox(width: 4),
-                  Text(
-                    '$wins Победы',
+                  AnimatedNumberText(
+                    value: double.tryParse(wins) ?? 0,
+                    padLeftZeros: true,
+                    padWidth: 2,
+                    suffix: ' Победы',
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
@@ -882,8 +895,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.baseline,
                 textBaseline: TextBaseline.alphabetic,
                 children: [
-                  Text(
-                    pts,
+                  AnimatedNumberText(
+                    value: double.tryParse(pts) ?? 0,
                     style: const TextStyle(
                       fontSize: 44,
                       fontWeight: FontWeight.w900,

@@ -41,7 +41,6 @@ class RoundPointsChart extends StatelessWidget {
                 ),
                 const SizedBox(width: 6),
 
-
                 Expanded(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -49,7 +48,7 @@ class RoundPointsChart extends StatelessWidget {
                     children: List.generate(totalRounds, (index) {
                       final score = index < roundPoints.length ? roundPoints[index] : null;
                       final hasScore = score != null;
-                      final barHeight = hasScore ? ((score / maxScore) * 78).clamp(4.0, 78.0) : 3.0;
+                      final targetHeight = hasScore ? ((score / maxScore) * 78).clamp(4.0, 78.0) : 3.0;
 
                       return Expanded(
                         child: Padding(
@@ -57,20 +56,27 @@ class RoundPointsChart extends StatelessWidget {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Container(
-                                height: barHeight,
-                                decoration: BoxDecoration(
-                                  color: hasScore ? accentColor : Colors.white.withValues(alpha: 0.12),
-                                  borderRadius: BorderRadius.circular(3),
-                                  boxShadow: hasScore
-                                      ? [
-                                    BoxShadow(
-                                      color: accentColor.withValues(alpha: 0.4),
-                                      blurRadius: 4,
-                                    )
-                                  ]
-                                      : null,
-                                ),
+                              TweenAnimationBuilder<double>(
+                                tween: Tween<double>(end: targetHeight),
+                                duration: const Duration(milliseconds: 650),
+                                curve: Curves.easeOutCubic,
+                                builder: (context, currentHeight, child) {
+                                  return Container(
+                                    height: currentHeight,
+                                    decoration: BoxDecoration(
+                                      color: hasScore ? accentColor : Colors.white.withValues(alpha: 0.12),
+                                      borderRadius: BorderRadius.circular(3),
+                                      boxShadow: hasScore
+                                          ? [
+                                        BoxShadow(
+                                          color: accentColor.withValues(alpha: 0.4),
+                                          blurRadius: 4,
+                                        )
+                                      ]
+                                          : null,
+                                    ),
+                                  );
+                                },
                               ),
                             ],
                           ),

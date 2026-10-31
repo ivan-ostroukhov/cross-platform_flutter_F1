@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:f1_app/common/localization/generated/app_localizations.dart';
 import '../../../../common/utils/f1_colors.dart';
+import '../../../../common/widgets/animated_number_text.dart';
 import '../../domain/constructor_detail_model.dart';
 import '../../domain/constructor_repository.dart';
 
@@ -535,19 +536,33 @@ class _ConstructorDetailScreenState extends State<ConstructorDetailScreen> {
   }
 
   static Widget _buildBigStat(String value, String unit) {
+    final numVal = double.tryParse(value);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.baseline,
       textBaseline: TextBaseline.alphabetic,
       children: [
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w900,
-            color: Colors.white,
-            letterSpacing: -0.5,
+        if (numVal != null)
+          AnimatedNumberText(
+            value: numVal,
+            padLeftZeros: value.length >= 2 && !value.contains('.'),
+            padWidth: value.length,
+            style: const TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              letterSpacing: -0.5,
+            ),
+          )
+        else
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              letterSpacing: -0.5,
+            ),
           ),
-        ),
         const SizedBox(width: 5),
         Text(
           unit,
@@ -562,6 +577,7 @@ class _ConstructorDetailScreenState extends State<ConstructorDetailScreen> {
   }
 
   static Widget _buildIconStat(IconData icon, String value, String label) {
+    final numVal = double.tryParse(value);
     return Row(
       children: [
         Icon(icon, size: 18, color: Colors.white70),
@@ -569,14 +585,26 @@ class _ConstructorDetailScreenState extends State<ConstructorDetailScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+            if (numVal != null)
+              AnimatedNumberText(
+                value: numVal,
+                padLeftZeros: value.length >= 2 && !value.contains('.'),
+                padWidth: value.length,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              )
+            else
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
-            ),
             Text(
               label,
               style: const TextStyle(
