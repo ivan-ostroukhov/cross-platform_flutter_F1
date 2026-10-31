@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:f1_app/common/localization/generated/app_localizations.dart';
 import '../../../../common/utils/f1_colors.dart';
 import '../../data/repositories/schedule_repository.dart';
 import '../../domain/models/race_model.dart';
 import '../cubit/schedule_cubit.dart';
-import 'race_detail_screen.dart';
 
 class ScheduleScreen extends StatelessWidget {
   const ScheduleScreen({super.key});
@@ -93,11 +93,7 @@ class _ScheduleViewState extends State<_ScheduleView> {
   }
 
   void _openRaceDetail(BuildContext context, RaceModel race) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => RaceDetailScreen(race: race),
-      ),
-    );
+    context.push('/schedule/detail', extra: race);
   }
 
   @override
@@ -419,11 +415,7 @@ class _ScheduleViewState extends State<_ScheduleView> {
         Divider(color: Colors.white.withValues(alpha: 0.07), height: 1),
         InkWell(
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => RaceDetailScreen(race: race),
-              ),
-            );
+            context.push('/schedule/detail', extra: race);
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -523,11 +515,7 @@ class _ScheduleViewState extends State<_ScheduleView> {
         Divider(color: Colors.white.withValues(alpha: 0.07), height: 1),
         InkWell(
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => RaceDetailScreen(race: race),
-              ),
-            );
+            context.push('/schedule/detail', extra: race);
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
