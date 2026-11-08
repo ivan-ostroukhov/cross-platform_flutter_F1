@@ -30,6 +30,7 @@ class DriverDetailScreen extends StatelessWidget {
               DriverDetailNotFound() => Center(child: Text(l10n.notFoundTitle)),
               DriverDetailLoading() => const Center(child: CircularProgressIndicator()),
               DriverDetailError(:final message) => Center(child: Text(message)),
+              DriverDetailNotFound() => Center(child: Text(l10n.notFoundTitle)),
               DriverDetailLoaded(:final driver) => LayoutBuilder(
                 builder: (context, constraints) {
                   return SingleChildScrollView(
