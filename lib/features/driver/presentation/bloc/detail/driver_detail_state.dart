@@ -1,5 +1,6 @@
 import '../../../domain/driver_model.dart';
 
+
 sealed class DriverDetailState {
   const DriverDetailState();
 }
@@ -14,8 +15,7 @@ final class DriverDetailLoaded extends DriverDetailState {
 }
 
 final class DriverDetailError extends DriverDetailState {
-  final String message;
-  const DriverDetailError(this.message);
+  const DriverDetailError();
 }
 
 final class DriverDetailNotFound extends DriverDetailState {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../common/localization/app_localizations.dart';
+import 'package:f1_app/common/localization/generated/app_localizations.dart';
 
 import '../../../../common/theme/theme_cubit.dart';
 import '../../../../common/localization/locale_cubit.dart';
@@ -48,12 +48,34 @@ class DriverListScreen extends StatelessWidget {
               builder: (context, state) {
                 return switch (state) {
                   DriverListLoading() => const Center(child: CircularProgressIndicator()),
+                // ВОТ ЭТА ВЕТКА ДОБАВИЛАСЬ:
+                  DriverListError() => Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.cloud_off, size: 64, color: colorScheme.error),
+                        const SizedBox(height: 12),
+                        Text(l10n.errorLoading, style: Theme.of(context).textTheme.titleMedium),
+                        const SizedBox(height: 16),
+                        FilledButton.icon(
+                          icon: const Icon(Icons.refresh),
+                          label: Text(l10n.retry),
+                          onPressed: () => context.read<DriverListCubit>().loadDrivers(),
+                        ),
+                      ],
+                    ),
+                  ),
                   DriverListNotFound(:final query) => Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.search_off, size: 64, color: colorScheme.error),
-                        Text(l10n.notFoundTitle, style: Theme.of(context).textTheme.headlineSmall),
+                        const SizedBox(height: 12),
+                        Text(
+                          l10n.notFoundTitle,
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        const SizedBox(height: 8),
                         Text('"$query": ${l10n.notFoundSubtitle}'),
                       ],
                     ),
